@@ -1,1 +1,5 @@
 Stories
+
+As a developer, I want the user to be able to save their games.
+As a developer, I want to display the game to the user.
+As a developer, I want to the user to use their keyboard to move.
