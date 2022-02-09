@@ -7,3 +7,7 @@ Stories.
 -As a user, I'd like to be able to obtain hints during the game that can assist me when facing a hard question.
 -As a user, I'd like to be able to choose the character I want to play with.
 -As a user, I'd like to have the option to choose the game level {easy, medium, or hard}
+-As a developer, I want the user to be able to save their games.
+-As a developer, I want to display the game to the user.
+-As a developer, I want to the user to use their keyboard to move.
+
