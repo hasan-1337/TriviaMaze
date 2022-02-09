@@ -3,3 +3,7 @@ Stories.
 -As a user, I'd like the game give hints to me for the questions being asked.
 -As a user, I'd like the game to have music on the background.
 -As a user, I'd like the game to have a tutorial to see how to play the game.
+-As a user, I'd like the game to give me an option to save my progress in the game.
+-As a user, I'd like to be able to obtain hints during the game that can assist me when facing a hard question.
+-As a user, I'd like to be able to choose the character I want to play with.
+-As a user, I'd like to have the option to choose the game level {easy, medium, or hard}
