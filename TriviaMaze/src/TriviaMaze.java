@@ -1,3 +1,9 @@
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -5,7 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.Scanner;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
 * @author Hasan, Mohammed, Manuel
@@ -14,55 +25,112 @@ import java.util.Scanner;
 public abstract class TriviaMaze {
 	
 	// Database's connection URL.
-	protected static final String DATABASE = "jdbc:sqlite:/C:\\sqlite\\saves.db";
+	private static final String DATABASE = "jdbc:sqlite:/C:\\sqlite\\saves.db";
 	
-	// Scanner used for user inputs.
-	private static Scanner myInput;
+	// The main frame for the GUI.
+	private static JFrame myFrame;
 	
     /**
-     * @param sArgs The command line arguments
+     * @param theArgs The command line arguments
      * @throws Exception 
      */
-	public static void main(final String[] sArgs) throws Exception {
+	public static void main(final String[] theArgs) {
 		
 		createDatabase();
 		
-		System.out.println("Welcome to Trivia Maze!\n\n[Options]\n1. New Game\n2. Load Game\n3. Exit\n");
-		
-		while (true) {
-			System.out.print("Please enter an option based on the number: ");
-			myInput = new Scanner(System.in);
-			
-			final int choice = myInput.nextInt();
-			boolean exit = true;
-			
-			switch (choice) {
-				case 1: { // New game
-					new Maze(myInput);
-					break;
-				}
-				case 2: { // Load
-					new Loadgame(myInput);
-					break;
-				}
-				case 3: { // Exit
-					System.exit(0);
-					break;
-				}
-				default: { // Invalid input
-					System.out.println("Invalid input, please try again.\n");
-					exit = false;
-				}
-			}
-			
-			if (exit) { // Exit the while loop.
-				break;
-			}
-		}
-		myInput.close();
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            	createGUI();
+            }
+        });
 	}
 	
     /**
+     * Create the main frame for GUI.
+     */	
+	private static void createGUI() {
+		myFrame = new JFrame();
+		myFrame.setTitle("Trivia Maze");
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame.setSize(800, 600);
+		myFrame.setLocationRelativeTo(null);
+		myFrame.setResizable(false);
+		myFrame.setLayout(null);
+		
+		JPanel welcomeText = new JPanel();
+		welcomeText.setBounds(0, 0, 800, 200);
+		
+		JLabel image = new JLabel();
+		image.setIcon(new ImageIcon("menu.jpg"));
+		image.setText("Welcome to Trivia Maze!");
+		image.setForeground(Color.RED);
+		image.setFont(new Font("Serif", Font.PLAIN, 36));
+		image.setHorizontalTextPosition(JLabel.CENTER);
+		image.setVerticalTextPosition(JLabel.CENTER);
+		welcomeText.add(image);
+		myFrame.add(welcomeText);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(3, 1));
+		panel.setBounds(0, 200, 800, 370);
+		panel.setBackground(Color.BLACK); 
+		
+		JLabel newGame = new JLabel();
+		newGame.setIcon(new ImageIcon("menugame.gif"));
+		newGame.setText("New Game");
+		newGame.setForeground(Color.RED);
+		newGame.setFont(new Font("Serif", Font.PLAIN, 36));
+		newGame.setHorizontalTextPosition(JLabel.CENTER);
+		newGame.setVerticalTextPosition(JLabel.CENTER);
+		newGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("Clicked");
+			}
+		});
+		
+		JLabel loadGame = new JLabel();
+		loadGame.setIcon(new ImageIcon("menuload.gif"));
+		loadGame.setText("Load Game");
+		loadGame.setForeground(Color.RED);
+		loadGame.setFont(new Font("Serif", Font.PLAIN, 36));
+		loadGame.setHorizontalTextPosition(JLabel.CENTER);
+		loadGame.setVerticalTextPosition(JLabel.CENTER);
+		loadGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("Clicked");
+			}
+		});
+		
+		JLabel exitGame = new JLabel();
+		exitGame.setIcon(new ImageIcon("menuexit.gif"));
+		exitGame.setText("Exit Game");
+		exitGame.setForeground(Color.RED);
+		exitGame.setFont(new Font("Serif", Font.PLAIN, 36));
+		exitGame.setHorizontalTextPosition(JLabel.CENTER);
+		exitGame.setVerticalTextPosition(JLabel.CENTER);
+		exitGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (JOptionPane.showConfirmDialog(null, "Are you sure you want to exit? :(", "Exit Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					System.out.println("Thanks for playing!");
+					System.exit(0);
+				}
+			}
+		});
+		
+		panel.add(newGame);
+		panel.add(loadGame);
+		panel.add(exitGame);
+		
+		myFrame.add(panel);
+		//myFrame.pack();
+		myFrame.setVisible(true);
+	}
+
+	/**
      * Create the database table if it doesn't exist.
      */
     private static void createDatabase() {
@@ -101,7 +169,7 @@ public abstract class TriviaMaze {
      */
     protected HashMap<Integer, String> select(final String theQuery) {
     	
-    	HashMap<Integer, String> list = new HashMap<Integer, String>(); 
+    	final HashMap<Integer, String> list = new HashMap<Integer, String>(); 
     	
         try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)){
         	
