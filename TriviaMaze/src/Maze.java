@@ -1,10 +1,9 @@
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Scanner;
 
 public class Maze extends TriviaMaze {
 	
-	public Maze(final Scanner input) {
+	public Maze() {
     	
     	final HashMap<Integer, String> list = select("SELECT id, name FROM saves");
     	final Iterator<Integer> itr = list.keySet().iterator();
