@@ -2,8 +2,11 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+//import java.awt.Graphics;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,8 +14,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -86,7 +91,7 @@ public abstract class TriviaMaze {
 		newGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Clicked");
+				//openNewGameMenu();
 			}
 		});
 		
@@ -100,7 +105,7 @@ public abstract class TriviaMaze {
 		loadGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Clicked");
+				openLoadGameMenu();
 			}
 		});
 		
@@ -127,6 +132,56 @@ public abstract class TriviaMaze {
 		
 		myFrame.add(panel);
 		//myFrame.pack();
+		myFrame.setVisible(true);
+	}
+	
+	/**
+     * Opens the load game menu.
+     */
+	private static void openLoadGameMenu() {
+		myFrame.dispose();
+		myFrame = new JFrame();
+		myFrame.setTitle("Trivia Maze - Load Game");
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame.setSize(800, 600);
+		myFrame.setLocationRelativeTo(null);
+		myFrame.setResizable(false);
+		
+		JPanel panel = new JPanel();
+		JButton[] button = new JButton[10];
+		
+    	final HashMap<Integer, String> list = select("SELECT id, name FROM saves");
+    	final Iterator<Integer> itr = list.keySet().iterator();
+    	int rows = 0;
+    	
+    	while (itr.hasNext()) {
+    		final int id = itr.next();
+    		final String name = list.get(id);
+    		
+    		button[rows] = new JButton(String.format("Save %d - %s", id, name));
+    		panel.add(button[rows]);
+    		rows++;
+    	}
+    	
+    	if (rows == 0) {
+            JOptionPane.showMessageDialog(null, "No saved games found!", "", 2);
+        	myFrame.dispose();
+        	createGUI();
+    		return;
+    	}
+    	
+    	button[rows] = new JButton("Back to Main Menu");
+    	button[rows].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent ae) {
+            	myFrame.dispose();
+            	createGUI();
+            }
+        });
+    	
+    	panel.add(button[rows]);
+    	panel.setLayout(new GridLayout(rows-1, 1));
+    	myFrame.add(panel);
 		myFrame.setVisible(true);
 	}
 
@@ -167,11 +222,11 @@ public abstract class TriviaMaze {
      * @param theQuery The SQL query to retrieve information from the database.
      * @return HashMap Contains the list of results of the query.
      */
-    protected HashMap<Integer, String> select(final String theQuery) {
+    protected static HashMap<Integer, String> select(final String theQuery) {
     	
     	final HashMap<Integer, String> list = new HashMap<Integer, String>(); 
     	
-        try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)){
+        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)){
         	
         	try {
     			while (rs.next()) {
