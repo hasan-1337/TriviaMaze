@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 //import java.awt.Graphics;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +18,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -36,8 +46,8 @@ public abstract class TriviaMaze {
 	private static JFrame myFrame;
 	
     /**
+     * Main method.
      * @param theArgs The command line arguments
-     * @throws Exception 
      */
 	public static void main(final String[] theArgs) {
 		
@@ -55,6 +65,7 @@ public abstract class TriviaMaze {
      * Create the main frame for GUI.
      */	
 	private static void createGUI() {
+		
 		myFrame = new JFrame();
 		myFrame.setTitle("Trivia Maze");
 		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -63,11 +74,11 @@ public abstract class TriviaMaze {
 		myFrame.setResizable(false);
 		myFrame.setLayout(null);
 		
-		JPanel welcomeText = new JPanel();
+		final JPanel welcomeText = new JPanel();
 		welcomeText.setBounds(0, 0, 800, 200);
 		
-		JLabel image = new JLabel();
-		image.setIcon(new ImageIcon("menu.jpg"));
+		final JLabel image = new JLabel();
+		image.setIcon(new ImageIcon("images/menu.jpg"));
 		image.setText("Welcome to Trivia Maze!");
 		image.setForeground(Color.RED);
 		image.setFont(new Font("Serif", Font.PLAIN, 36));
@@ -76,13 +87,13 @@ public abstract class TriviaMaze {
 		welcomeText.add(image);
 		myFrame.add(welcomeText);
 		
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(3, 1));
 		panel.setBounds(0, 200, 800, 370);
 		panel.setBackground(Color.BLACK); 
 		
-		JLabel newGame = new JLabel();
-		newGame.setIcon(new ImageIcon("menugame.gif"));
+		final JLabel newGame = new JLabel();
+		newGame.setIcon(new ImageIcon("images/menugame.gif"));
 		newGame.setText("New Game");
 		newGame.setForeground(Color.RED);
 		newGame.setFont(new Font("Serif", Font.PLAIN, 36));
@@ -90,13 +101,39 @@ public abstract class TriviaMaze {
 		newGame.setVerticalTextPosition(JLabel.CENTER);
 		newGame.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				//openNewGameMenu();
+			public void mouseClicked(final MouseEvent e) {
+				String input;
+				final JFrame frame = new JFrame();
+				
+				while (true) {
+	                input = JOptionPane.showInputDialog(frame, "Enter a save name:" , "New Game", 1);
+	                
+	                if (input == null) {
+	                    break;
+	                }
+	                
+	                Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
+	                Matcher matcher = pattern.matcher(input);
+	               
+	                if (input.length() < 3) {
+	                	playSound("Error.wav");
+	                	JOptionPane.showMessageDialog(frame, "Must have at least 3 characters.", "Warning", 2);
+	                } else if (!matcher.find()) {
+	                	playSound("Error.wav");
+	                	JOptionPane.showMessageDialog(frame, "Must input characters only.", "Warning", 2);
+	                } else {
+                        break;
+	                }
+				}
+				
+				if (input != null) {
+					openNewGameMenu(input);
+				}
 			}
 		});
 		
-		JLabel loadGame = new JLabel();
-		loadGame.setIcon(new ImageIcon("menuload.gif"));
+		final JLabel loadGame = new JLabel();
+		loadGame.setIcon(new ImageIcon("images/menuload.gif"));
 		loadGame.setText("Load Game");
 		loadGame.setForeground(Color.RED);
 		loadGame.setFont(new Font("Serif", Font.PLAIN, 36));
@@ -104,13 +141,13 @@ public abstract class TriviaMaze {
 		loadGame.setVerticalTextPosition(JLabel.CENTER);
 		loadGame.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				openLoadGameMenu();
 			}
 		});
 		
-		JLabel exitGame = new JLabel();
-		exitGame.setIcon(new ImageIcon("menuexit.gif"));
+		final JLabel exitGame = new JLabel();
+		exitGame.setIcon(new ImageIcon("images/menuexit.gif"));
 		exitGame.setText("Exit Game");
 		exitGame.setForeground(Color.RED);
 		exitGame.setFont(new Font("Serif", Font.PLAIN, 36));
@@ -118,7 +155,7 @@ public abstract class TriviaMaze {
 		exitGame.setVerticalTextPosition(JLabel.CENTER);
 		exitGame.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				if (JOptionPane.showConfirmDialog(null, "Are you sure you want to exit? :(", "Exit Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					System.out.println("Thanks for playing!");
 					System.exit(0);
@@ -131,7 +168,26 @@ public abstract class TriviaMaze {
 		panel.add(exitGame);
 		
 		myFrame.add(panel);
-		//myFrame.pack();
+		myFrame.setVisible(true);
+	}
+	
+	/**
+     * Opens the new game menu.
+     * @param theSave The save file name.
+     */
+	private static void openNewGameMenu(final String theSave) {
+		
+		myFrame.dispose();
+		myFrame = new JFrame();
+		myFrame.setTitle("Trivia Maze - New Game");
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame.setSize(800, 600);
+		myFrame.setLocationRelativeTo(null);
+		myFrame.setResizable(false);
+		
+		final JPanel panel = new JPanel();
+		
+    	myFrame.add(panel);
 		myFrame.setVisible(true);
 	}
 	
@@ -139,6 +195,7 @@ public abstract class TriviaMaze {
      * Opens the load game menu.
      */
 	private static void openLoadGameMenu() {
+		
 		myFrame.dispose();
 		myFrame = new JFrame();
 		myFrame.setTitle("Trivia Maze - Load Game");
@@ -147,7 +204,7 @@ public abstract class TriviaMaze {
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setResizable(false);
 		
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		JButton[] button = new JButton[10];
 		
     	final HashMap<Integer, String> list = select("SELECT id, name FROM saves");
@@ -159,11 +216,19 @@ public abstract class TriviaMaze {
     		final String name = list.get(id);
     		
     		button[rows] = new JButton(String.format("Save %d - %s", id, name));
+        	button[rows].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent ae) {
+                	//myFrame.dispose();
+                	// TO-DO: Load the game...
+                }
+            });
     		panel.add(button[rows]);
     		rows++;
     	}
     	
     	if (rows == 0) {
+    		playSound("Error.wav");
             JOptionPane.showMessageDialog(null, "No saved games found!", "", 2);
         	myFrame.dispose();
         	createGUI();
@@ -226,13 +291,12 @@ public abstract class TriviaMaze {
     	
     	final HashMap<Integer, String> list = new HashMap<Integer, String>(); 
     	
-        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)){
-        	
+        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)) {
         	try {
     			while (rs.next()) {
     				list.put(rs.getInt("id"), rs.getString("name"));
     			}
-    		} catch (SQLException e) {
+    		} catch (final SQLException e) {
     			e.printStackTrace();
     		}
         } catch (final SQLException e) {
@@ -287,5 +351,42 @@ public abstract class TriviaMaze {
         } catch (final SQLException e) {
         	e.printStackTrace();
         }
+    }
+    
+    /**
+     * Plays a sound from an audio file.
+     * @param soundFile The sound file's name.
+     */
+    private static void playSound(final String soundFile) {
+    	
+        final File f = new File("sounds/" + soundFile);
+        AudioInputStream audioIn = null;
+        
+		try {
+			audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
+		} catch (final MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (final UnsupportedAudioFileException e1) {
+			e1.printStackTrace();
+		} catch (final IOException e1) {
+			e1.printStackTrace();
+		}  
+		
+        Clip clip = null;
+        
+		try {
+			clip = AudioSystem.getClip();
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+		}
+		
+        try {
+			clip.open(audioIn);
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+        clip.start();
     }
 }

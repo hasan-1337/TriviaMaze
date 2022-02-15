@@ -13,7 +13,5 @@ public class Maze extends TriviaMaze {
     		System.out.println("Id: " + id + "\tName: " + list.get(id));
     	}
 	}
-	
-
 
 }
