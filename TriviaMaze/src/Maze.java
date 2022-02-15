@@ -1,31 +1,20 @@
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-public class Maze {
+public class Maze extends TriviaMaze {
 	
-	public Maze(final Connection connection, final Scanner input) {
-		
-    	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
-				 + "id integer PRIMARY KEY,\n"
-				 + "name text NOT NULL,\n" 
-				 + "capacity real);";
+	public Maze(final Scanner input) {
     	
-		Database(connection, sql); 
+    	final HashMap<Integer, String> list = select("SELECT id, name FROM saves");
+    	final Iterator<Integer> itr = list.keySet().iterator();
+    	
+    	while (itr.hasNext()) {
+    		final int id = itr.next();
+    		System.out.println("Id: " + id + "\tName: " + list.get(id));
+    	}
 	}
 	
-    /**
-     * Connect to the database and send or retrieve information.
-     * @param theConnection	Connection object to be used to connect to the database.
-     * @param theSQL The SQL query to send to the database.
-     */
-    private void Database(final Connection theConnection, final String theSQL) {
 
-        try (final Connection conn = theConnection; Statement query = conn.createStatement()) {
-        	query.execute(theSQL);
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+
 }

@@ -1,24 +1,8 @@
 import java.util.Scanner;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-public class Loadgame {
+public class Loadgame extends TriviaMaze {
 	
-	public Loadgame(final Connection connection, final Scanner input) {
-		Database(connection); 
+	public Loadgame(final Scanner input) {
+		
 	}
-	
-    /**
-     * Connect to the database and send or retrieve information.
-     * @param theConnection	Connection object to be used to connect to the database.
-     */
-    private void Database(final Connection theConnection) {
-
-    	try (final Connection conn = theConnection; Statement query = conn.createStatement()) {
-    		System.out.println("Connected to the database.");
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 }

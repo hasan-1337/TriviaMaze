@@ -1,5 +1,5 @@
 
-public class Question_Answer {
+public class Question_Answer extends TriviaMaze {
 	
 	public Question_Answer() {
 		

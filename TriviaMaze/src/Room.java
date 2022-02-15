@@ -1,4 +1,5 @@
-public class Room {
+
+public class Room extends TriviaMaze {
 	
 	public Room() {
 		
