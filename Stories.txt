@@ -11,3 +11,7 @@ Stories.
 -As a developer, I want to display the game to the user.
 -As a developer, I want to the user to use their keyboard to move.
 
+User stories for the 2nd iteration.
+_ As a user, I would like the game to have audio and sounds during the gameplay.
+_ As a user, I would like to be able to choose the field of questions that will be asked to me (I.e math, history, science).
+_ As a user, I would like to choose which load program to continue from when choosing load game option.
