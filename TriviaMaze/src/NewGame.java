@@ -37,8 +37,9 @@ public class NewGame extends TriviaMaze {
         	button[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(final ActionEvent ae) {
-                	myFrame.dispose();
-                	update(theSave, button[inneri].getText());
+                	final String difficulty = button[inneri].getText();
+                	update(theSave, difficulty);
+                	new Maze(theSave, difficulty);
                 }
             });
         	panel.add(button[i]);

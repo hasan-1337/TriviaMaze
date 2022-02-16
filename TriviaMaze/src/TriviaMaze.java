@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-//import java.awt.Graphics;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -67,7 +66,7 @@ public abstract class TriviaMaze {
 		
 		myFrame = new JFrame();
 		myFrame.setTitle("Trivia Maze");
-		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setResizable(false);
