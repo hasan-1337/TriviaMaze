@@ -16,3 +16,4 @@ _ As a user, I would like the game to have audio and sounds during the gameplay.
 _ As a user, I would like to be able to choose the field of questions that will be asked to me (I.e math, history, science).
 _ As a user, I would like to choose which load program to continue from when choosing load game option.
 _ As a user, I would like the game to offer me to start a new progress, or load my previous one when starting the game.
+_ As a user, I would like the game to offer a scoreboard with all the players who played.
