@@ -3,6 +3,9 @@ import javax.swing.JOptionPane;
 
 public class Question_Answer extends TriviaMaze {
 	
+	// The player answered correctly or not.
+	protected boolean correct = false;
+	
 	public Question_Answer() {
 		
 		final char[] type = {'/', '*', '+', '-'};
@@ -37,6 +40,7 @@ public class Question_Answer extends TriviaMaze {
 			JOptionPane.showMessageDialog(frame, String.format("You lost a key for not answering!\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		} else if (input.equals(Integer.toString(answer))) {
 			JOptionPane.showMessageDialog(frame, String.format("Correct!\nYou opened the door.\nKeys Remaining: %d", myKeys), "Door Trivia", 1);
+			correct = true;
 		} else {
 			JOptionPane.showMessageDialog(frame, String.format("Incorrect!\nYou lost a key.\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		}
