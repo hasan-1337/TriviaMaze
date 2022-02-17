@@ -43,6 +43,9 @@ public abstract class TriviaMaze {
 	// The player's keys.
 	protected int myKeys;
 	
+	// The player's doors.
+	protected int myDoors;
+	
     /**
      * Main method.
      * @param theArgs The command line arguments
@@ -171,22 +174,59 @@ public abstract class TriviaMaze {
 		myFrame.add(panel);
 		myFrame.setVisible(true);
 	}
-
+	
 	/**
-     * Create the database table if it doesn't exist.
+     * Launches the game.
+     * @param theSave The save file name.
+     * @param theDifficulty The game's difficulty setting.
      */
-    private static void createDatabase() {
-
-    	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
-				 + "id INTEGER PRIMARY KEY ASC,\n"
-				 + "name text NOT NULL UNIQUE, \n"
-				 + "difficulty text NOT NULL);";
+	protected void launchGame(final String theSave, final String theDifficulty) {
+		JPanel game = new Maze(theSave, theDifficulty);
+		myFrame = new JFrame();
+		myFrame.setTitle("Trivia Maze");
+		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		myFrame.add(game);
+		myFrame.setLocationRelativeTo(null);
+		myFrame.pack();
+		myFrame.setResizable(false);
+		myFrame.setVisible(true);
+	}
+	
+    /**
+     * Plays a sound from an audio file.
+     * @param theSoundFile The sound file's name.
+     */
+    protected static void playSound(final String theSoundFile) {
     	
-        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement()) {
-        	stmt.execute(sql);
-        } catch (final SQLException e) {
-        	e.printStackTrace();
-        }
+        final File f = new File("sounds/" + theSoundFile);
+        AudioInputStream audioIn = null;
+        
+		try {
+			audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
+		} catch (final MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (final UnsupportedAudioFileException e1) {
+			e1.printStackTrace();
+		} catch (final IOException e1) {
+			e1.printStackTrace();
+		}  
+		
+        Clip clip = null;
+        
+		try {
+			clip = AudioSystem.getClip();
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+		}
+		
+        try {
+			clip.open(audioIn);
+		} catch (final LineUnavailableException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+        clip.start();
     }
 	
     /**
@@ -282,40 +322,20 @@ public abstract class TriviaMaze {
         }
     }
     
-    /**
-     * Plays a sound from an audio file.
-     * @param soundFile The sound file's name.
+	/**
+     * Create the database table if it doesn't exist.
      */
-    protected static void playSound(final String soundFile) {
+    private static void createDatabase() {
+
+    	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
+				 + "id INTEGER PRIMARY KEY ASC,\n"
+				 + "name text NOT NULL UNIQUE, \n"
+				 + "difficulty text NOT NULL);";
     	
-        final File f = new File("sounds/" + soundFile);
-        AudioInputStream audioIn = null;
-        
-		try {
-			audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
-		} catch (final MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (final UnsupportedAudioFileException e1) {
-			e1.printStackTrace();
-		} catch (final IOException e1) {
-			e1.printStackTrace();
-		}  
-		
-        Clip clip = null;
-        
-		try {
-			clip = AudioSystem.getClip();
-		} catch (final LineUnavailableException e) {
-			e.printStackTrace();
-		}
-		
-        try {
-			clip.open(audioIn);
-		} catch (final LineUnavailableException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-        clip.start();
+        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement()) {
+        	stmt.execute(sql);
+        } catch (final SQLException e) {
+        	e.printStackTrace();
+        }
     }
 }

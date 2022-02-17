@@ -39,7 +39,8 @@ public class NewGame extends TriviaMaze {
                 public void actionPerformed(final ActionEvent ae) {
                 	final String difficulty = button[inneri].getText();
                 	update(theSave, difficulty);
-                	new Maze(theSave, difficulty);
+                	myFrame.dispose();
+                	launchGame(theSave, difficulty);
                 }
             });
         	panel.add(button[i]);
