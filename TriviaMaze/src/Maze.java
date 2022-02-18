@@ -19,7 +19,7 @@ public class Maze extends JPanel {
 	private final int MAXHEIGHT = 600;
 	
 	// Size of the maze.
-	private final int MAZESIZE = 40;
+	private final int MAZESIZE = 20;
 	
 	// Random test maze.
 	// 0 = not-visited
@@ -29,16 +29,33 @@ public class Maze extends JPanel {
 	// 4 = player
 	// 9 = goal
 	private int[][] myMaze = {
-			{1,1,1,1,1,1,1,1,1,1,1,1,1},
-			{1,4,3,0,1,1,1,0,0,0,0,0,1},
-			{1,5,1,0,1,1,1,0,1,1,1,0,1},
-			{1,0,0,0,1,1,1,0,0,0,0,0,1},
-			{1,0,1,0,0,0,0,0,1,1,1,0,1},
-			{1,0,1,0,1,1,1,0,1,0,0,0,1},
-			{1,0,3,0,1,0,0,0,1,1,1,0,1},
-			{1,0,1,0,1,1,1,0,1,0,1,0,1},
-			{1,0,0,0,0,0,0,0,0,0,1,0,1},
-			{1,1,1,1,1,1,1,1,1,1,1,9,1}
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,4,3,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,3,1,0,0,0,1,1,0,1},
+            {1,0,1,3,0,0,1,0,1,1,1,1,1,3,0,3,0,3,1,0,0,0,1,1,1,0,0,1},
+            {1,0,3,0,1,3,0,0,1,0,0,0,1,1,1,1,0,1,0,0,3,0,0,0,0,0,0,1},
+            {1,3,0,3,1,0,0,0,1,1,0,1,0,0,0,0,3,1,1,1,0,0,0,0,1,0,0,1},
+            {1,0,1,0,1,1,1,0,1,0,0,1,3,0,3,0,3,1,0,1,1,1,0,0,0,0,3,1},
+            {1,3,0,3,1,3,0,3,1,0,0,0,1,1,0,0,0,1,1,1,0,1,0,0,1,1,0,1},
+            {1,0,1,0,1,1,3,0,3,1,0,0,0,1,1,1,0,1,0,1,0,1,3,3,1,1,0,1},
+            {1,1,0,1,3,0,0,3,0,0,1,3,0,3,1,0,0,0,1,1,1,1,0,0,0,0,0,1},
+            {1,0,0,0,0,1,1,0,0,0,0,0,3,3,1,0,3,3,0,3,1,0,0,0,1,1,3,1},
+            {1,0,0,1,0,1,3,0,3,1,0,0,0,1,1,1,0,1,1,1,3,0,0,3,1,1,0,1},
+            {1,0,3,0,3,1,0,0,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,1},
+            {1,0,0,1,0,0,3,0,0,3,0,3,3,0,3,1,1,0,3,1,0,1,0,3,0,0,0,1},
+            {1,0,0,0,0,1,1,1,0,0,0,0,1,3,1,0,1,3,0,3,0,0,0,0,1,1,3,1},
+            {1,0,0,0,0,1,1,0,1,0,0,0,1,3,0,0,0,3,0,3,0,0,0,0,1,1,3,1},
+            {1,0,3,0,1,3,0,3,1,0,0,0,1,1,0,1,0,0,3,0,3,0,0,3,0,0,3,1},
+            {1,3,0,3,1,0,0,0,1,1,3,1,0,0,1,1,0,1,1,1,0,1,3,0,1,0,0,1},
+            {1,0,3,0,1,3,0,3,1,0,0,0,1,1,1,1,0,1,0,0,3,0,0,0,0,0,0,1},
+            {1,3,0,3,1,0,0,0,1,1,0,1,0,0,0,0,3,1,1,1,0,0,0,0,3,0,3,1},
+            {1,0,1,0,1,1,1,0,1,0,0,1,0,0,3,1,0,0,0,1,1,1,0,0,0,0,1,1},
+            {1,1,0,1,0,0,0,0,0,0,1,1,0,3,1,0,0,0,1,1,1,1,0,0,3,0,0,1},
+            {1,0,0,0,0,1,1,0,0,0,0,0,1,3,1,0,0,3,0,3,0,1,0,0,1,1,3,1},
+            {1,0,0,1,0,1,3,0,3,1,0,0,0,1,1,1,1,1,1,1,3,1,0,0,3,1,0,1},
+            {1,0,3,0,3,1,0,0,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,0,3,0,1},
+            {1,0,0,1,0,0,3,0,0,0,1,3,3,0,3,1,0,3,0,1,0,0,0,3,0,1,3,1},
+            {1,0,0,0,0,1,1,0,0,0,0,0,1,3,1,0,0,1,0,3,1,0,0,0,1,1,9,1},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 	};
 	
 	// The player's X coordinate. 
@@ -60,6 +77,7 @@ public class Maze extends JPanel {
 		this.setPreferredSize(new Dimension(MAXWIDTH, MAXHEIGHT));
 		this.setFocusable(true);
 		this.requestFocus();
+		myPause = false;
 	}
 	
 	/**
@@ -125,9 +143,11 @@ public class Maze extends JPanel {
 	private boolean move(final int thePath) {
 		
 		if (thePath == 9) { // Reached the end.
-			System.out.println("YOU WIN!!!");
-			JOptionPane.showMessageDialog(null, "WINNER WINNER CHICKEN DINNER", "You Won", 2);
+			TriviaMaze.playSound("Win.wav");
+			JOptionPane.showMessageDialog(null, "WINNER WINNER CHICKEN DINNER!", "You Won", 1);
 			myPause = true;
+			TriviaMaze.myFrame.dispose();
+			TriviaMaze.createGUI(); // Restart
 			return false;
 		}
 		else if (thePath == 3) { // At a door.
@@ -136,8 +156,10 @@ public class Maze extends JPanel {
 				if (!door.myResult) {
 					if (door.myKeys == 0) { // Game over.
 						myPause = true;
-						System.out.println("Game Over! :(");
-						JOptionPane.showConfirmDialog(null, "You're out of keys!\nTry again?", "Game Over", JOptionPane.YES_OPTION);
+						TriviaMaze.playSound("Lose.wav");
+						JOptionPane.showMessageDialog(null, "GAME OVER\nYou're out of keys.", "Game Over", 0);
+						TriviaMaze.myFrame.dispose();
+						TriviaMaze.createGUI(); // Restart
 					}
 					return false;
 				}

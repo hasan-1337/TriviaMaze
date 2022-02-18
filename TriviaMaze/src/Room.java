@@ -14,7 +14,7 @@ public class Room extends TriviaMaze {
 		if (option == JOptionPane.YES_OPTION) {
 			myDoorOption = true;
 			final Question_Answer result = new Question_Answer();
-			myResult = result.correct;
+			myResult = result.myCorrect;
 		} else {
 			myDoorOption = false;
 		}

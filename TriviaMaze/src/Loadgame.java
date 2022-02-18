@@ -23,6 +23,7 @@ public class LoadGame extends TriviaMaze {
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setResizable(false);
+		myFrame.setUndecorated(true);
 		
 		final JPanel panel = new JPanel();
 		JButton[] button = new JButton[50];

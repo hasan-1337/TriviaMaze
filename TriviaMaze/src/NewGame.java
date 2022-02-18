@@ -1,9 +1,10 @@
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class NewGame extends TriviaMaze {
@@ -21,22 +22,30 @@ public class NewGame extends TriviaMaze {
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setResizable(false);
+		myFrame.setUndecorated(true);
 		
 		final JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(3, 1));
+		panel.setLayout(new GridLayout(4, 1));
+		panel.setBounds(0, 0, 800, 600);
 		
-		JButton[] button = new JButton[3];
+		JLabel title = new JLabel();
+		title.setIcon(new ImageIcon("images/difficulty.jpg"));
+		panel.add(title);
 		
-		button[0] = new JButton("Easy");
-		button[1] = new JButton("Medium");
-		button[2] = new JButton("Hard");
+		JLabel[] button = new JLabel[3];
+		button[0] = new JLabel();
+		button[0].setIcon(new ImageIcon("images/easy.jpg"));
+		button[1] = new JLabel();
+		button[1].setIcon(new ImageIcon("images/medium.jpg"));
+		button[2] = new JLabel();
+		button[2].setIcon(new ImageIcon("images/hard.jpg"));
 		
 		for (int i = 0; i < 3; i++) {
 			final int inneri = i;
-			
-        	button[i].addActionListener(new ActionListener() {
+
+        	button[i].addMouseListener(new MouseAdapter() {
                 @Override
-                public void actionPerformed(final ActionEvent ae) {
+                public void mouseClicked(final MouseEvent e) {
                 	final String difficulty = button[inneri].getText();
                 	update(theSave, difficulty);
                 	myFrame.dispose();
