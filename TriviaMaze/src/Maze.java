@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Maze extends JPanel {
@@ -28,8 +30,8 @@ public class Maze extends JPanel {
 	// 9 = goal
 	private int[][] myMaze = {
 			{1,1,1,1,1,1,1,1,1,1,1,1,1},
-			{1,4,3,0,1,0,1,0,0,0,0,0,1},
-			{1,5,1,0,0,1,1,0,1,1,1,0,1},
+			{1,4,3,0,1,1,1,0,0,0,0,0,1},
+			{1,5,1,0,1,1,1,0,1,1,1,0,1},
 			{1,0,0,0,1,1,1,0,0,0,0,0,1},
 			{1,0,1,0,0,0,0,0,1,1,1,0,1},
 			{1,0,1,0,1,1,1,0,1,0,0,0,1},
@@ -74,20 +76,8 @@ public class Maze extends JPanel {
 		switch (theEvent.getKeyCode()) {
 			case KeyEvent.VK_UP, KeyEvent.VK_W: {
 				if (myMaze[myX - 1][myY] != 1) {
-					if (myMaze[myX - 1][myY] == 9) {
-						System.out.println("YOU WIN!!!");
-						myPause = true;
+					if (!move(myMaze[myX - 1][myY])) {
 						return;
-					}
-					else if (myMaze[myX - 1][myY] == 3) {
-						Room door = new Room();
-						if (door.myDoorOption) {
-							if (!door.myResult) {
-								return;
-							}
-						} else {
-							return;
-						}
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX - 1][myY] = 4;
@@ -96,20 +86,8 @@ public class Maze extends JPanel {
 			}
 			case KeyEvent.VK_DOWN, KeyEvent.VK_S: {
 				if (myMaze[myX + 1][myY] != 1) {
-					if (myMaze[myX + 1][myY] == 9) {
-						System.out.println("YOU WIN!!!");
-						myPause = true;
+					if (!move(myMaze[myX + 1][myY])) {
 						return;
-					}
-					else if (myMaze[myX + 1][myY] == 3) {
-						Room door = new Room();
-						if (door.myDoorOption) {
-							if (!door.myResult) {
-								return;
-							}
-						} else {
-							return;
-						}
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX + 1][myY] = 4;
@@ -118,20 +96,8 @@ public class Maze extends JPanel {
 			}
 			case KeyEvent.VK_LEFT, KeyEvent.VK_A: {
 				if (myMaze[myX][myY - 1] != 1) {
-					if (myMaze[myX][myY - 1] == 9) {
-						System.out.println("YOU WIN!!!");
-						myPause = true;
+					if (!move(myMaze[myX][myY - 1])) {
 						return;
-					}
-					else if (myMaze[myX][myY - 1] == 3) {
-						Room door = new Room();
-						if (door.myDoorOption) {
-							if (!door.myResult) {
-								return;
-							}
-						} else {
-							return;
-						}
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX][myY - 1] = 4;
@@ -140,21 +106,8 @@ public class Maze extends JPanel {
 			}
 			case KeyEvent.VK_RIGHT, KeyEvent.VK_D: {
 				if (myMaze[myX][myY + 1] != 1) {
-					if (myMaze[myX][myY + 1] == 9) {
-						System.out.println("YOU WIN!!!");
-						myPause = true;
+					if (!move(myMaze[myX][myY + 1])) {
 						return;
-					}
-					else if (myMaze[myX][myY + 1] == 3) {
-						
-						Room door = new Room();
-						if (door.myDoorOption) {
-							if (!door.myResult) {
-								return;
-							}
-						} else {
-							return;
-						}
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX][myY + 1] = 4;
@@ -163,6 +116,36 @@ public class Maze extends JPanel {
 			}
 		}
 		repaint();
+	}
+	
+	/**
+     * Check if the player could move.
+     * @param thePath The player's next move.
+     */
+	private boolean move(final int thePath) {
+		
+		if (thePath == 9) { // Reached the end.
+			System.out.println("YOU WIN!!!");
+			JOptionPane.showMessageDialog(null, "WINNER WINNER CHICKEN DINNER", "You Won", 2);
+			myPause = true;
+			return false;
+		}
+		else if (thePath == 3) { // At a door.
+			final Room door = new Room();
+			if (door.myDoorOption) {
+				if (!door.myResult) {
+					if (door.myKeys == 0) { // Game over.
+						myPause = true;
+						System.out.println("Game Over! :(");
+						JOptionPane.showConfirmDialog(null, "You're out of keys!\nTry again?", "Game Over", JOptionPane.YES_OPTION);
+					}
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -182,7 +165,7 @@ public class Maze extends JPanel {
 					case 2: color = Color.WHITE; break; // Visited
 					case 3: color = Color.YELLOW; break; // Door
 					case 9: color = Color.RED; break; // The End
-					default: color = Color.GRAY; // Path
+					default: color = Color.DARK_GRAY; // Path
 				}
 				
 				theGraphics.setColor(color);

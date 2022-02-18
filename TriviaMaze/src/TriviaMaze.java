@@ -190,6 +190,7 @@ public abstract class TriviaMaze {
 		myFrame.pack();
 		myFrame.setResizable(false);
 		myFrame.setVisible(true);
+		playSound("Maze.wav");
 	}
 	
     /**
