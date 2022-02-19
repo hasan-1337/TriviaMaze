@@ -16,9 +16,8 @@ public class NewGame extends TriviaMaze {
 	public NewGame(final String theSave) {
 		
 		myFrame.dispose();
-		myFrame = new JFrame();
-		myFrame.setTitle("Trivia Maze - Difficulty");
-		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame = new JFrame("Trivia Maze - Difficulty");
+		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
 		myFrame.setResizable(false);
@@ -48,9 +47,9 @@ public class NewGame extends TriviaMaze {
                 public void mouseClicked(final MouseEvent e) {
                 	playSound("Select.wav");
                 	final String difficulty = button[inneri].getText();
-                	update(theSave, difficulty);
+                	update(theSave, difficulty, 3 - inneri, 0);
                 	myFrame.dispose();
-                	launchGame(theSave, difficulty, 3 - inneri);
+                	launchGame(theSave, 3 - inneri);
                 }
             });
         	panel.add(button[i]);
@@ -58,5 +57,12 @@ public class NewGame extends TriviaMaze {
 		
 		myFrame.add(panel);
 		myFrame.setVisible(true);
+		
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                delete(theSave);
+            }
+        });
 	}
 }

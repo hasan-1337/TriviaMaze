@@ -1,3 +1,7 @@
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class Question_Answer extends TriviaMaze {
@@ -33,7 +37,18 @@ public class Question_Answer extends TriviaMaze {
 			}
 		}
 		
-		final String input = JOptionPane.showInputDialog(null, String.format("Solve the problem to open the door!\nYou have only have 10 seconds!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
+		final JFrame frame = new JFrame();
+		final Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+				  	if (myKeys == theKeys && !myCorrect) {
+						frame.dispose();
+				  	}
+			  }
+		}, 10000);
+		
+		final String input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
 		
 		if (input == null) {
 			playSound("Incorrect.wav");
