@@ -34,9 +34,6 @@ public class TriviaMaze {
 	// The main frame for the GUI.
 	protected static JFrame myFrame;
 	
-	// The player's keys.
-	protected int myKeys;
-	
 	// The player's doors.
 	protected int myDoors;
 	
@@ -79,6 +76,8 @@ public class TriviaMaze {
 		newGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
+				playSound("Select.wav");
+				
 				while (true) {
 					final String input = JOptionPane.showInputDialog(null, "Enter a save name:" , "New Game", 1);
 	                
@@ -98,9 +97,11 @@ public class TriviaMaze {
 	                } else {
 	    				if (input != null) {
 	    					if (insert(input, "Easy")) {
+	    						playSound("Select.wav");
 	    						new NewGame(input);
 	    						break;
 	    					} else {
+	    						playSound("Error.wav");
 	    						JOptionPane.showMessageDialog(null, "Save already exists, please pick a different name.", "Warning", 2);
 	    					}
 	    				}
@@ -113,6 +114,7 @@ public class TriviaMaze {
 		loadGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
+				playSound("Select.wav");
 				new LoadGame();
 			}
 		});
@@ -121,6 +123,8 @@ public class TriviaMaze {
 		exitGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
+				playSound("Select.wav");
+				
 				if (JOptionPane.showConfirmDialog(null, "Are you sure you want to exit? :(", "Exit Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					System.out.println("Thanks for playing!");
 					System.exit(0);
@@ -141,9 +145,11 @@ public class TriviaMaze {
      * Launches the game.
      * @param theSave The save file name.
      * @param theDifficulty The game's difficulty setting.
+     * @param theKeys The player's keys.
      */
-	protected void launchGame(final String theSave, final String theDifficulty) {
-		JPanel game = new Maze(theSave, theDifficulty);
+	protected void launchGame(final String theSave, final String theDifficulty, final int theKeys) {
+		
+		JPanel game = new Maze(theSave, theDifficulty, theKeys);
 		myFrame = new JFrame();
 		myFrame.setTitle("Trivia Maze");
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
