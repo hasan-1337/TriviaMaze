@@ -17,8 +17,7 @@ public class LoadGame extends TriviaMaze {
 	public LoadGame() {
 		
 		myFrame.dispose();
-		myFrame = new JFrame();
-		myFrame.setTitle("Trivia Maze - Load Game");
+		myFrame = new JFrame("Trivia Maze - Load Game");
 		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
@@ -40,6 +39,7 @@ public class LoadGame extends TriviaMaze {
         	button[rows].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(final ActionEvent ae) {
+                	playSound("Select.wav");
                 	//myFrame.dispose();
                 	// TO-DO: Load the game...
                 }
@@ -59,6 +59,7 @@ public class LoadGame extends TriviaMaze {
     	button[rows].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent ae) {
+            	playSound("Select.wav");
             	myFrame.dispose();
             	createGUI();
             }

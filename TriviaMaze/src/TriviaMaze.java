@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,8 +60,7 @@ public class TriviaMaze {
      */	
 	protected static void createGUI() {
 		
-		myFrame = new JFrame();
-		myFrame.setTitle("Trivia Maze");
+		myFrame = new JFrame("Trivia Maze");
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(800, 600);
 		myFrame.setLocationRelativeTo(null);
@@ -129,6 +130,7 @@ public class TriviaMaze {
 					System.out.println("Thanks for playing!");
 					System.exit(0);
 				}
+				playSound("Select.wav");
 			}
 		});
 		
@@ -144,21 +146,34 @@ public class TriviaMaze {
 	/**
      * Launches the game.
      * @param theSave The save file name.
-     * @param theDifficulty The game's difficulty setting.
      * @param theKeys The player's keys.
      */
-	protected void launchGame(final String theSave, final String theDifficulty, final int theKeys) {
+	protected void launchGame(final String theSave, final int theKeys) {
 		
-		JPanel game = new Maze(theSave, theDifficulty, theKeys);
-		myFrame = new JFrame();
-		myFrame.setTitle("Trivia Maze");
-		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.add(game);
-		myFrame.setLocationRelativeTo(null);
-		myFrame.pack();
-		myFrame.setResizable(false);
-		myFrame.setVisible(true);
-		//playSound("Maze.wav");
+    	final JFrame loading = new JFrame("Trivia Maze");
+    	loading.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	loading.getContentPane().add(new JLabel(new ImageIcon("images/loading.gif")));
+    	loading.setSize(800, 600);
+    	loading.setLocationRelativeTo(null);
+    	loading.setUndecorated(true);
+    	loading.setVisible(true);
+    	
+		final Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+				  	loading.dispose();
+					JPanel game = new Maze(theSave, theKeys);
+					myFrame = new JFrame("Trivia Maze");
+					myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					myFrame.setSize(800, 600);
+					myFrame.setLocationRelativeTo(null);
+					myFrame.setResizable(false);
+					myFrame.setUndecorated(true);
+					myFrame.add(game);
+					myFrame.setVisible(true);
+			  }
+		}, 3500);
 	}
 	
     /**
@@ -242,14 +257,18 @@ public class TriviaMaze {
      * Update the data of an existing save from the database.
      * @param theName The name of the save to update.
      * @param theDifficulty The game's difficulty to update.
+     * @param theKey The player's keys.
+     * @param theDoor How many doors
      */
-    protected void update(final String theName, final String theDifficulty) {
+    protected void update(final String theName, final String theDifficulty, final int theKey, final int theDoor) {
     	
-        final String sql = "UPDATE saves SET difficulty = ? WHERE name = ?";
+        final String sql = "UPDATE saves SET difficulty = ?, keys = ?, doors = ? WHERE name = ?";
 
         try (final Connection conn = this.connect(); final PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, theDifficulty);
-            pstmt.setString(2, theName);
+            pstmt.setInt(2, theKey);
+            pstmt.setInt(3, theDoor);
+            pstmt.setString(4, theName);
             pstmt.executeUpdate();
         } catch (final SQLException e) {
         	e.printStackTrace();
@@ -258,14 +277,14 @@ public class TriviaMaze {
     
     /**
      * Delete a save from the database specified by the id.
-     * @param theId The id of the save to delete.
+     * @param theName The name of the save to delete.
      */
-    protected void delete(final int theId) {
+    protected void delete(final String theName) {
     	
-    	final String sql = "DELETE FROM saves WHERE id = ?";
+    	final String sql = "DELETE FROM saves WHERE name = ?";
 
         try (final Connection conn = this.connect(); final PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, theId);
+            pstmt.setString(1, theName);
             pstmt.executeUpdate();
         } catch (final SQLException e) {
         	e.printStackTrace();
@@ -280,6 +299,8 @@ public class TriviaMaze {
     	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
 				 + "id INTEGER PRIMARY KEY ASC,\n"
 				 + "name text NOT NULL UNIQUE, \n"
+				 + "keys INTEGER, \n"
+				 + "doors INTEGER, \n"
 				 + "difficulty text NOT NULL);";
     	
         try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement()) {
