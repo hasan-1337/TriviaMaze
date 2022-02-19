@@ -163,7 +163,7 @@ public class TriviaMaze {
 			  @Override
 			  public void run() {
 				  	loading.dispose();
-					JPanel game = new Maze(theSave, theKeys);
+					final JPanel game = new Maze(theSave, theKeys);
 					myFrame = new JFrame("Trivia Maze");
 					myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					myFrame.setSize(800, 600);

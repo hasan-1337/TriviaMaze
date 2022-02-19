@@ -1,25 +1,25 @@
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public class Maze extends JPanel {
 	
 	// Serial Version.
 	private static final long serialVersionUID = -8859286187722619956L;
 	
-	// The game's max window width.
-	private final int MAXWIDTH = 800;
-	
-	// The game's max window height.
-	private final int MAXHEIGHT = 600;
-	
 	// Size of the maze.
-	private final int MAZESIZE = 20;
+	private final int MAZESIZE = 18;
 	
 	// The maze map to play on.
 	// 0 = not-visited
@@ -42,6 +42,8 @@ public class Maze extends JPanel {
 	// Pause the player's movement.
 	private boolean myPause;
 	
+	private JPanel myPanel;
+	
 	/**
      * Generates the maze.
      * @param theSave The save file name.
@@ -49,7 +51,7 @@ public class Maze extends JPanel {
      */
 	public Maze(final String theSave, final int theKeys) {
     	
-		this.setPreferredSize(new Dimension(MAXWIDTH, MAXHEIGHT));
+		this.setBounds(0, 0, 800, 600);
 		this.setFocusable(true);
 		this.requestFocus();
 		myPause = false;
@@ -136,6 +138,22 @@ public class Maze extends JPanel {
 			            {1,1,0,1,3,0,0,3,0,0,1,3,0,3,1,0,0,0,1,1,1,1,0,0,0,0,0,1},
 			            {1,0,0,0,0,1,1,0,0,0,0,0,3,3,1,0,3,3,0,3,1,0,0,0,1,1,3,1},
 			            {1,0,0,1,0,1,3,0,3,1,0,0,0,1,1,1,0,1,1,1,3,0,0,3,1,1,0,1},
+			            {1,0,3,0,3,1,0,0,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,1},
+			            {1,0,0,1,0,0,3,0,0,3,0,3,3,0,3,1,1,0,3,1,0,1,0,3,0,0,0,1},
+			            {1,0,0,0,0,1,1,1,0,0,0,0,1,3,1,0,1,3,0,3,0,0,0,0,1,1,3,1},
+			            {1,0,0,0,0,1,1,0,1,0,0,0,1,3,0,0,0,3,0,3,0,0,0,0,1,1,3,1},
+			            {1,0,3,0,1,3,0,3,1,0,0,0,1,1,0,1,0,0,3,0,3,0,0,3,0,0,3,1},
+			            {1,3,0,3,1,0,0,0,1,1,3,1,0,0,1,1,0,1,1,1,0,1,3,0,1,0,0,1},
+			            {1,0,3,0,1,3,0,3,1,0,0,0,1,1,1,1,0,1,0,0,3,0,0,0,0,0,0,1},
+			            {1,3,0,3,1,0,0,0,1,1,0,1,0,0,0,0,3,1,1,1,0,0,0,0,3,0,3,1},
+			            {1,0,1,0,1,1,1,0,1,0,0,1,0,0,3,1,0,0,0,1,1,1,0,0,0,0,1,1},
+			            {1,1,0,1,0,0,0,0,0,0,1,1,0,3,1,0,0,0,1,1,1,1,0,0,3,0,0,1},
+			            {1,0,0,0,0,1,1,0,0,0,0,0,1,3,1,0,0,3,0,3,0,1,0,0,1,1,3,1},
+			            {1,0,0,1,0,1,3,0,3,1,0,0,0,1,1,1,1,1,1,1,3,1,0,0,3,1,0,1},
+			            {1,0,3,0,3,1,0,0,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,0,3,0,1},
+			            {1,0,0,1,0,0,3,0,0,0,1,3,3,0,3,1,0,3,0,1,0,0,0,3,0,1,3,1},
+			            {1,0,0,0,0,1,1,0,0,0,0,0,1,3,1,0,0,1,0,3,1,0,0,0,1,1,9,1},
+			            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 					};
 				myMaze = maze;
 				break;
@@ -148,7 +166,7 @@ public class Maze extends JPanel {
      * @param theEvent The event object to see what keys they clicked.
      */
 	@Override
-	protected void processKeyEvent(KeyEvent theEvent) {
+	protected void processKeyEvent(final KeyEvent theEvent) {
 		
 		if (theEvent.getID() != KeyEvent.KEY_PRESSED || myPause) {
 			return;
@@ -215,9 +233,11 @@ public class Maze extends JPanel {
 		}
 		else if (thePath == 3) { // At a door.
 			final Room door = new Room(myKeys);
+			myKeys = door.myKeys;
+			
 			if (door.myDoorOption) {
 				if (!door.myResult) {
-					if (door.myKeys == 0) { // Game over.
+					if (myKeys == 0) { // Game over.
 						myPause = true;
 						TriviaMaze.playSound("Lose.wav");
 						JOptionPane.showMessageDialog(null, "GAME OVER\nYou're out of keys.", "Game Over", 0);
@@ -226,7 +246,6 @@ public class Maze extends JPanel {
 					} else {
 						TriviaMaze.playSound("Locked.wav");
 					}
-					myKeys = door.myKeys;
 					return false;
 				}
 			} else {
@@ -269,6 +288,79 @@ public class Maze extends JPanel {
 		myY = index.y;
 		theGraphics.setColor(Color.GREEN);
 		theGraphics.fillOval(myY * MAZESIZE, myX * MAZESIZE, MAZESIZE, MAZESIZE);
+		attachments();
+	}
+	
+	/**
+     * Place the instructions and side attachments on the panel.
+     */
+	private void attachments() {
+		
+		if (myPanel != null) {
+			myPanel.getParent().remove(myPanel);
+		}
+		myPanel = new JPanel();
+		myPanel.setBounds(0, 0, 800, 600);
+		myPanel.setBackground(Color.BLACK);
+		
+		final JLabel key = new JLabel(new ImageIcon("images/key.png"));
+		key.setBounds(680, 10, 100, 99);
+		
+		final JLabel keycounter = new JLabel(String.format("Keys: %d", myKeys));
+		keycounter.setBounds(550, 16, 100, 100);
+		keycounter.setForeground(Color.RED);
+		keycounter.setFont(new Font("Serif", Font.PLAIN, 24));
+		
+		final JLabel door = new JLabel(new ImageIcon("images/door.png"));
+		door.setBounds(680, 150, 100, 99);
+		
+		final JLabel doorcounter = new JLabel(String.format("Doors: %d", myKeys));
+		doorcounter.setBounds(550, 150, 100, 100);
+		doorcounter.setForeground(Color.RED);
+		doorcounter.setFont(new Font("Serif", Font.PLAIN, 24));
+		
+		final JLabel image = new JLabel(new ImageIcon("images/instructions.png"));
+		image.setBounds(512, 495, 297, 160);
+		
+		final JTextArea instruction = new JTextArea("   1. Use arrow keys or WASD on your keyboard to move.\n"
+				+ "   2. Once you step on a grey square it will turn white which marks it as visited.\n"
+		        + "   3. Yellow squares are doors, you must answer a question in order to pass through the door.\n"
+		        + "   4. Answering incorrectly or not answering at all, will cost you a key.\n"
+		        + "   5. If you run out of keys, you will lose the game.\n"
+				+ "   6. Reach the red square in order to win. Good luck :)");
+		instruction.setEditable(false);
+		instruction.setBounds(0, 500, 510, 300);
+		instruction.setBackground(Color.BLACK);
+		instruction.setForeground(Color.RED);
+		
+		final JButton exit = new JButton("Save & Exit");
+		exit.setBackground(Color.DARK_GRAY);
+		exit.setForeground(Color.RED);
+		exit.setFocusPainted(false);
+		exit.setFont(new Font("Tahoma", Font.BOLD, 16));
+		exit.setBounds(550, 420, 220, 60);
+		exit.addActionListener(new ActionListener() {
+
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        if (JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?\nYour progress is saved.", "Exit Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					TriviaMaze.myFrame.dispose();
+					TriviaMaze.createGUI(); // Back to main menu.
+		        } else {
+		        	repaint();
+		        }
+		    }
+		});
+		
+		
+		myPanel.add(instruction);
+		myPanel.add(image);
+		myPanel.add(door);
+		myPanel.add(key);
+		myPanel.add(keycounter);
+		myPanel.add(doorcounter);
+		myPanel.add(exit);
+		this.add(myPanel);
 	}
 	
 	/**

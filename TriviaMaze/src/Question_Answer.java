@@ -48,6 +48,7 @@ public class Question_Answer extends TriviaMaze {
 			  }
 		}, 10000);
 		
+		playSound("Question.wav");
 		final String input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
 		
 		if (input == null) {
