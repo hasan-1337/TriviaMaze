@@ -46,10 +46,11 @@ public class NewGame extends TriviaMaze {
         	button[i].addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
+                	playSound("Select.wav");
                 	final String difficulty = button[inneri].getText();
                 	update(theSave, difficulty);
                 	myFrame.dispose();
-                	launchGame(theSave, difficulty);
+                	launchGame(theSave, difficulty, 3 - inneri);
                 }
             });
         	panel.add(button[i]);

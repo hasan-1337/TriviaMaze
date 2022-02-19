@@ -64,6 +64,9 @@ public class Maze extends JPanel {
 	// The player's Y coordinate.
 	private int myY;
 	
+	// The player's keys.
+	private int myKeys;
+	
 	// Pause the player's movement.
 	private boolean myPause;
 	
@@ -71,13 +74,15 @@ public class Maze extends JPanel {
      * Generates the maze.
      * @param theSave The save file name.
      * @param theDifficulty The game's difficulty setting.
+     * @param theKeys The player's keys.
      */
-	public Maze(final String theSave, final String theDifficulty) {
+	public Maze(final String theSave, final String theDifficulty, final int theKeys) {
     	
 		this.setPreferredSize(new Dimension(MAXWIDTH, MAXHEIGHT));
 		this.setFocusable(true);
 		this.requestFocus();
 		myPause = false;
+		myKeys = theKeys;
 	}
 	
 	/**
@@ -151,7 +156,7 @@ public class Maze extends JPanel {
 			return false;
 		}
 		else if (thePath == 3) { // At a door.
-			final Room door = new Room();
+			final Room door = new Room(myKeys);
 			if (door.myDoorOption) {
 				if (!door.myResult) {
 					if (door.myKeys == 0) { // Game over.
@@ -160,13 +165,17 @@ public class Maze extends JPanel {
 						JOptionPane.showMessageDialog(null, "GAME OVER\nYou're out of keys.", "Game Over", 0);
 						TriviaMaze.myFrame.dispose();
 						TriviaMaze.createGUI(); // Restart
+					} else {
+						TriviaMaze.playSound("Locked.wav");
 					}
+					myKeys = door.myKeys;
 					return false;
 				}
 			} else {
 				return false;
 			}
 		}
+		TriviaMaze.playSound("Footstep.wav");
 		return true;
 	}
 	
