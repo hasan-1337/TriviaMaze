@@ -39,6 +39,9 @@ public class TriviaMaze {
 	// The player's doors.
 	protected int myDoors;
 	
+	// The main menu music.
+	protected static Clip myMusic;
+	
     /**
      * Main method.
      * @param theArgs The command line arguments
@@ -140,7 +143,12 @@ public class TriviaMaze {
 		
 		myFrame.add(panel);
 		myFrame.setVisible(true);
-		//playSound("mainmenu.wav");
+		
+		if (myMusic != null) {
+			myMusic.stop();
+		}
+		myMusic = playSound("mainmenu.wav");
+		myMusic.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 	
 	/**
@@ -162,16 +170,20 @@ public class TriviaMaze {
 		timer.schedule(new TimerTask() {
 			  @Override
 			  public void run() {
-				  	loading.dispose();
-					final JPanel game = new Maze(theSave, theKeys);
-					myFrame = new JFrame("Trivia Maze");
-					myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					myFrame.setSize(800, 600);
-					myFrame.setLocationRelativeTo(null);
-					myFrame.setResizable(false);
-					myFrame.setUndecorated(true);
-					myFrame.add(game);
-					myFrame.setVisible(true);
+				  myMusic.stop();
+				  myMusic = playSound("Maze.wav");
+				  myMusic.loop(Clip.LOOP_CONTINUOUSLY);
+				  loading.dispose();
+				  
+				  final JPanel game = new Maze(theSave, theKeys);
+				  myFrame = new JFrame("Trivia Maze");
+				  myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				  myFrame.setSize(800, 600);
+				  myFrame.setLocationRelativeTo(null);
+				  myFrame.setResizable(false);
+				  myFrame.setUndecorated(true);
+				  myFrame.add(game);
+				  myFrame.setVisible(true);
 			  }
 		}, 3500);
 	}
@@ -179,19 +191,21 @@ public class TriviaMaze {
     /**
      * Plays a sound from an audio file.
      * @param theSoundFile The sound file's name.
+     * @return Clip Retrieves the object of the sound that is playing.
      */
-    protected static void playSound(final String theSoundFile) {
+    protected static Clip playSound(final String theSoundFile) {
     	
 		try {
-			final File file = new File("sounds/" + theSoundFile);
-			final AudioInputStream audioIn = AudioSystem.getAudioInputStream(file.toURI().toURL());
+			final AudioInputStream audioIn = AudioSystem.getAudioInputStream(new File("sounds/" + theSoundFile).toURI().toURL());
 			final Clip clip = AudioSystem.getClip();
 			clip.open(audioIn);
 			clip.start();
+			return clip;
 		}  
         catch(final Exception e) {
             e.printStackTrace();
         }
+		return null;
     }
 	
     /**
