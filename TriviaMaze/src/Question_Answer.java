@@ -1,6 +1,7 @@
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -48,18 +49,21 @@ public class Question_Answer extends TriviaMaze {
 			  }
 		}, 10000);
 		
-		playSound("Question.wav");
+		final Clip sound = playSound("Question.wav");
 		final String input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
 		
 		if (input == null) {
+			sound.stop();
 			playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("You lost a key for not answering!\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		} else if (input.equals(Integer.toString(answer))) {
+			sound.stop();
 			playSound("Correct.wav");
 			JOptionPane.showMessageDialog(null, String.format("Correct!\nYou opened the door.\nKeys Remaining: %d", myKeys), "Door Trivia", 1);
 			playSound("Door.wav");
 			myCorrect = true;
 		} else {
+			sound.stop();
 			playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("Incorrect!\nYou lost a key.\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		}
