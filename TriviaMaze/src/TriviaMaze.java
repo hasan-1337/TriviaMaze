@@ -36,11 +36,11 @@ public class TriviaMaze {
 	// The main frame for the GUI.
 	protected static JFrame myFrame;
 	
-	// The player's doors.
-	protected int myDoors;
-	
 	// The main menu music.
 	protected static Clip myMusic;
+	
+	// The player's doors.
+	protected int myDoors;
 	
     /**
      * Main method.
@@ -86,6 +86,7 @@ public class TriviaMaze {
 					final String input = JOptionPane.showInputDialog(null, "Enter a save name:" , "New Game", 1);
 	                
 	                if (input == null) {
+	                	playSound("Select.wav");
 	                    break;
 	                }
 	                
