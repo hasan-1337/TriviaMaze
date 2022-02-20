@@ -254,6 +254,9 @@ public class Maze extends JPanel {
 			
 			if (door.myDoorOption) {
 				if (!door.myResult) {
+					attachments();
+					repaint();
+					
 					if (myKeys == 0) { // Game over.
 						myPause = true;
 						TriviaMaze.playSound("Lose.wav");
