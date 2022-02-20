@@ -241,6 +241,7 @@ public class Maze extends JPanel {
 	private boolean move(final int thePath) {
 		
 		if (thePath == 9) { // Reached the end.
+			TriviaMaze.myMusic.stop();
 			TriviaMaze.playSound("Win.wav");
 			JOptionPane.showMessageDialog(null, "WINNER WINNER CHICKEN DINNER!", "You Won", 1);
 			myPause = true;
