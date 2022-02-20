@@ -39,6 +39,12 @@ public class Maze extends JPanel {
 	// The player's keys.
 	private int myKeys;
 	
+	// The doors opened counter.
+	private int myDoors;
+	
+	// The player's steps counter.
+	private int mySteps;
+	
 	// Pause the player's movement.
 	private boolean myPause;
 	
@@ -56,6 +62,8 @@ public class Maze extends JPanel {
 		this.requestFocus();
 		myPause = false;
 		myKeys = theKeys;
+		myDoors = 0;
+		mySteps = 0;
 
 		switch (myKeys) {
 			case 1: { // Hard
@@ -177,6 +185,8 @@ public class Maze extends JPanel {
 				if (myMaze[myX - 1][myY] != 1) {
 					if (!move(myMaze[myX - 1][myY])) {
 						return;
+					} else if (myMaze[myX - 1][myY] != 2) {
+						mySteps++;
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX - 1][myY] = 4;
@@ -187,6 +197,8 @@ public class Maze extends JPanel {
 				if (myMaze[myX + 1][myY] != 1) {
 					if (!move(myMaze[myX + 1][myY])) {
 						return;
+					} else if (myMaze[myX + 1][myY] != 2) {
+						mySteps++;
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX + 1][myY] = 4;
@@ -197,6 +209,8 @@ public class Maze extends JPanel {
 				if (myMaze[myX][myY - 1] != 1) {
 					if (!move(myMaze[myX][myY - 1])) {
 						return;
+					} else if (myMaze[myX][myY - 1] != 2) {
+						mySteps++;
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX][myY - 1] = 4;
@@ -207,6 +221,8 @@ public class Maze extends JPanel {
 				if (myMaze[myX][myY + 1] != 1) {
 					if (!move(myMaze[myX][myY + 1])) {
 						return;
+					} else if (myMaze[myX][myY + 1] != 2) {
+						mySteps++;
 					}
 					myMaze[myX][myY] = 2;
 					myMaze[myX][myY + 1] = 4;
@@ -214,6 +230,7 @@ public class Maze extends JPanel {
 				break;
 			}
 		}
+		attachments();
 		repaint();
 	}
 	
@@ -247,6 +264,8 @@ public class Maze extends JPanel {
 						TriviaMaze.playSound("Locked.wav");
 					}
 					return false;
+				} else {
+					myDoors++;
 				}
 			} else {
 				return false;
@@ -314,10 +333,18 @@ public class Maze extends JPanel {
 		final JLabel door = new JLabel(new ImageIcon("images/door.png"));
 		door.setBounds(680, 150, 100, 99);
 		
-		final JLabel doorcounter = new JLabel(String.format("Doors: %d", myKeys));
+		final JLabel doorcounter = new JLabel(String.format("Doors: %d", myDoors));
 		doorcounter.setBounds(550, 150, 100, 100);
 		doorcounter.setForeground(Color.RED);
 		doorcounter.setFont(new Font("Serif", Font.PLAIN, 24));
+		
+		final JLabel steps = new JLabel(new ImageIcon("images/steps.png"));
+		steps.setBounds(680, 290, 100, 99);
+		
+		final JLabel stepscounter = new JLabel(String.format("Steps: %d", mySteps));
+		stepscounter.setBounds(550, 290, 100, 100);
+		stepscounter.setForeground(Color.RED);
+		stepscounter.setFont(new Font("Serif", Font.PLAIN, 24));
 		
 		final JLabel image = new JLabel(new ImageIcon("images/instructions.png"));
 		image.setBounds(512, 495, 297, 160);
@@ -337,8 +364,8 @@ public class Maze extends JPanel {
 		exit.setBackground(Color.DARK_GRAY);
 		exit.setForeground(Color.RED);
 		exit.setFocusPainted(false);
-		exit.setFont(new Font("Tahoma", Font.BOLD, 16));
-		exit.setBounds(550, 420, 220, 60);
+		exit.setFont(new Font("Serif", Font.PLAIN, 24));
+		exit.setBounds(550, 440, 220, 40);
 		exit.addActionListener(new ActionListener() {
 
 		    @Override
@@ -357,10 +384,13 @@ public class Maze extends JPanel {
 		myPanel.add(image);
 		myPanel.add(door);
 		myPanel.add(key);
+		myPanel.add(steps);
 		myPanel.add(keycounter);
 		myPanel.add(doorcounter);
+		myPanel.add(stepscounter);
 		myPanel.add(exit);
 		this.add(myPanel);
+		this.requestFocus();
 	}
 	
 	/**
