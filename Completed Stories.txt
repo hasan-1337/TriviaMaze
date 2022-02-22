@@ -4,3 +4,10 @@ Completed Stories
 _ added new game, load game, and exit options once the game is launched.
 _ connected the game to a database that save the players' progress.
 _ added animations to the homescreen of the game.
+_ added different maps for different levels.
+_added music to the game and the homescreen.
+_ added a counter for steps.
+_ added a counter for keys.
+_ adder a counter for steps.
+_ added a time limit for answering questions.
+_ added visuals and JLables into the game.
