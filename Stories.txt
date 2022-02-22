@@ -17,3 +17,11 @@ _ As a user, I would like to be able to choose the field of questions that will 
 _ As a user, I would like to choose which load program to continue from when choosing load game option.
 _ As a user, I would like the game to offer me to start a new progress, or load my previous one when starting the game.
 _ As a user, I would like the game to offer a scoreboard with all the players who played.
+
+
+
+User stories for the 3rd iteration.
+_ As a developer, we added music for th homescreen and during the game.
+_ As a developer, we added features to the side of the JFrame that indicates the number of doors, keys, and steps.
+_ As a developer, we added different maps for each level of the game.
+_ As a developer, we added a timer of 10 seconds for the user to answer the question (otherwise it will automatically consider it wrong).
