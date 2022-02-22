@@ -90,6 +90,10 @@ public class Question_Answer extends TriviaMaze {
 		}
 	}
 
+	/**
+	 * Reads a file that contains the trivia questions with answers and loads these questions and answers in the
+	 * dictionary.
+	 */
 	private void readFile() {
 		Scanner input;
 		try {
