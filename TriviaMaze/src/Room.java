@@ -21,6 +21,7 @@ public class Room extends TriviaMaze {
 			myResult = result.myCorrect;
 		} else {
 			myDoorOption = false;
+			myKeys = theKeys;
 		}
 	}
 }
