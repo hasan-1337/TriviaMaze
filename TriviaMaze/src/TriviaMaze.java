@@ -41,6 +41,7 @@ public class TriviaMaze {
 	
 	// The player's doors.
 	protected int myDoors;
+
 	
     /**
      * Main method.

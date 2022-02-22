@@ -1,5 +1,6 @@
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
@@ -12,28 +13,42 @@ public class Question_Answer extends TriviaMaze {
 	
 	// The player's keys.
 	protected int myKeys;
+
+	private HashMap<Integer, TriviaQuestion> dictionary;
+
+	private int numberOfQuestions;
 	
 	public Question_Answer(final int theKeys) {
-		
+		Random rand = new Random();
+		dictionary = new HashMap<>();
+		numberOfQuestions = 0;
+		readFile();
 		myKeys = theKeys;
-		final char[] type = {'*', '+', '-'};
+		final String[] type = {"*", "+", "-", "trivia"};
 		final int num1 = (int) Math.round(Math.random() * 10);
 		final int num2 = (int) Math.round(Math.random() * 10);
-		final char symbol = type[(int) Math.round(Math.random() * 2)];
-		int answer = 0;
+		final String symbol = type[rand.nextInt(4)];
+		String answer = "";
+		String question = "";
 		myCorrect = false;
 		
 		switch (symbol) {
-			case '*': {
-				answer = num1 * num2;
+			case "*": {
+				answer = Integer.toString(num1 * num2);
 				break;
 			}
-			case '+': {
-				answer = num1 + num2;
+			case "+": {
+				answer = Integer.toString(num1 + num2);
 				break;
 			}
-			case '-': {
-				answer = num1 - num2;
+			case "-": {
+				answer = Integer.toString(num1 - num2);
+				break;
+			}
+			case "trivia": {
+				TriviaQuestion word = dictionary.get(rand.nextInt(numberOfQuestions));
+				question = word.getQuestion();
+				answer = word.getAnswer();
 				break;
 			}
 		}
@@ -50,13 +65,19 @@ public class Question_Answer extends TriviaMaze {
 		}, 10000);
 		
 		final Clip sound = playSound("Question.wav");
-		final String input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
-		
+		final String input;
+
+		if (!symbol.equals("trivia")) {
+			input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %s %d", num1, symbol, num2), "Door Trivia", 3);
+		} else {
+			input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %s", question), "Door Trivia", 1);
+		}
+
 		if (input == null) {
 			sound.stop();
 			playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("You lost a key for not answering!\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
-		} else if (input.equals(Integer.toString(answer))) {
+		} else if (input.equalsIgnoreCase(answer)) {
 			sound.stop();
 			playSound("Correct.wav");
 			JOptionPane.showMessageDialog(null, String.format("Correct!\nYou opened the door.\nKeys Remaining: %d", myKeys), "Door Trivia", 1);
@@ -66,6 +87,23 @@ public class Question_Answer extends TriviaMaze {
 			sound.stop();
 			playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("Incorrect!\nYou lost a key.\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
+		}
+	}
+
+	private void readFile() {
+		Scanner input;
+		try {
+			input = new Scanner(new File("src/Questions"));
+		} catch (FileNotFoundException e) {
+			System.out.println("File doesn't exist");
+			return;
+		}
+		while (input.hasNextLine()) {
+			String question = input.nextLine();
+			String answer = input.nextLine();
+			TriviaQuestion triviaQuestion = new TriviaQuestion(question, answer);
+			dictionary.put(numberOfQuestions, triviaQuestion);
+			numberOfQuestions++;
 		}
 	}
 }
