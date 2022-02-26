@@ -20,7 +20,10 @@ public class LoadGame extends TriviaMaze {
      */
 	public LoadGame() {
 		
-		myFrame.dispose();
+		if (myFrame != null) {
+			myFrame.dispose();
+		}
+		
 		myFrame = new JFrame("Trivia Maze - Load Game");
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(800, 600);
@@ -43,15 +46,16 @@ public class LoadGame extends TriviaMaze {
 		
 		JButton[] button = new JButton[50];
 		
-    	final HashMap<Integer, String> list = select("SELECT id, name, difficulty FROM saves");
+    	final HashMap<Integer, String> list = select("SELECT * FROM saves");
     	final Iterator<Integer> itr = list.keySet().iterator();
     	int rows = 0;
     	
     	while (itr.hasNext()) {
     		final int id = itr.next();
     		final String data = list.get(id);
-    		
-    		button[rows] = new JButton(String.format("Save %d - %s", id, data));
+    		final String[] info = data.split("\\|");
+
+    		button[rows] = new JButton(String.format("[Save %d] %s - %s", id, info[0].toString(), info[1].toString()));
     		button[rows].setBackground(Color.DARK_GRAY);
     		button[rows].setForeground(Color.RED);
     		button[rows].setFocusPainted(false);
@@ -68,7 +72,6 @@ public class LoadGame extends TriviaMaze {
     	
     	if (rows == 0) {
             JOptionPane.showMessageDialog(null, "No saved games found!", "", 2);
-        	myFrame.dispose();
         	createGUI();
     		return;
     	}
@@ -81,7 +84,6 @@ public class LoadGame extends TriviaMaze {
             @Override
             public void actionPerformed(final ActionEvent ae) {
             	playSound("Select.wav");
-            	myFrame.dispose();
             	createGUI();
             }
         });
@@ -92,11 +94,13 @@ public class LoadGame extends TriviaMaze {
 		myFrame.setVisible(true);
 	}
 	
-	/**
+    /**
      * Loads the save.
-     * @param theSave The save file name.
+     * @param theData The information that holds all the save information.
      */
-	private void load(final String theSave) {
+	public void load(final String theData) {
+		
+		final String[] info = theData.split("\\|");
 		
     	myFrame.dispose();
 		myFrame = new JFrame("Trivia Maze - Load Game");
@@ -119,7 +123,8 @@ public class LoadGame extends TriviaMaze {
 		data.setBounds(0, 200, 800, 300);
 		data.setBackground(Color.BLACK);
 		
-		final JLabel name = new JLabel(String.format("<html>Save Name: %s<br/>Difficulty: %s<br/>Keys: %d<br/>Doors: %d<br/>Steps: %d</html>", theSave, "Test", 2, 2, 2));
+		final JLabel name = new JLabel(String.format("<html>Save Name: %s<br/>Difficulty: %s<br/>Keys: %d<br/>Doors: %d<br/>Steps: %d</html>", info[0], info[1],
+				Integer.parseInt(info[2]), Integer.parseInt(info[3]),  Integer.parseInt(info[4])));
 		name.setForeground(Color.RED);
 		name.setFont(new Font("Serif", Font.PLAIN, 42));
 		data.add(name);
@@ -137,7 +142,7 @@ public class LoadGame extends TriviaMaze {
             @Override
             public void actionPerformed(final ActionEvent ae) {
             	playSound("Select.wav");
-            	launchGame(theSave, 3);
+            	launchGame(info[0], info[1], Integer.parseInt(info[2]), Integer.parseInt(info[3]), Integer.parseInt(info[4]), info[5]); 
             }
         });
 		
@@ -149,8 +154,8 @@ public class LoadGame extends TriviaMaze {
             @Override
             public void actionPerformed(final ActionEvent ae) {
             	playSound("Select.wav");
-            	//delete(theSave);
-            	new LoadGame();
+            	delete(info[0]);
+            	createGUI();
             }
         });
 		

@@ -15,7 +15,6 @@ public class NewGame extends TriviaMaze {
      */
 	public NewGame(final String theSave) {
 		
-		myFrame.dispose();
 		myFrame = new JFrame("Trivia Maze - Difficulty");
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(800, 600);
@@ -32,11 +31,11 @@ public class NewGame extends TriviaMaze {
 		panel.add(title);
 		
 		JLabel[] button = new JLabel[3];
-		button[0] = new JLabel();
+		button[0] = new JLabel("Easy");
 		button[0].setIcon(new ImageIcon("images/easy.jpg"));
-		button[1] = new JLabel();
+		button[1] = new JLabel("Medium");
 		button[1].setIcon(new ImageIcon("images/medium.jpg"));
-		button[2] = new JLabel();
+		button[2] = new JLabel("Hard");
 		button[2].setIcon(new ImageIcon("images/hard.jpg"));
 		
 		for (int i = 0; i < 3; i++) {
@@ -46,10 +45,9 @@ public class NewGame extends TriviaMaze {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
                 	playSound("Select.wav");
-                	final String difficulty = button[inneri].getText();
-                	update(theSave, difficulty, 3 - inneri, 0);
-                	myFrame.dispose();
-                	launchGame(theSave, 3 - inneri);
+                	String difficulty = button[inneri].getText();
+                	update(theSave, difficulty, 3 - inneri, 0, 0, "");
+                	launchGame(theSave, difficulty, 3 - inneri, 0, 0, "");
                 }
             });
         	panel.add(button[i]);
@@ -57,12 +55,5 @@ public class NewGame extends TriviaMaze {
 		
 		myFrame.add(panel);
 		myFrame.setVisible(true);
-		
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                delete(theSave);
-            }
-        });
 	}
 }

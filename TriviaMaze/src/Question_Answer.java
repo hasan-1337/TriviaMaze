@@ -5,14 +5,18 @@ import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class Question_Answer extends TriviaMaze {
+public class Question_Answer {
 	
 	// The player answered correctly or not.
-	protected boolean myCorrect;
+	private boolean myCorrect;
 	
 	// The player's keys.
-	protected int myKeys;
+	private int myKeys;
 	
+	/**
+     * Prompt the user with a question to answer.
+     * @param theKeys The player's keys.
+     */
 	public Question_Answer(final int theKeys) {
 		
 		myKeys = theKeys;
@@ -49,23 +53,39 @@ public class Question_Answer extends TriviaMaze {
 			  }
 		}, 10000);
 		
-		final Clip sound = playSound("Question.wav");
+		final Clip sound = TriviaMaze.playSound("Question.wav");
 		final String input = JOptionPane.showInputDialog(frame, String.format("Solve the problem to open the door!\nProblem: %d %c %d", num1, symbol, num2) , "Door Trivia", 3);
 		
 		if (input == null) {
 			sound.stop();
-			playSound("Incorrect.wav");
+			TriviaMaze.playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("You lost a key for not answering!\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		} else if (input.equals(Integer.toString(answer))) {
 			sound.stop();
-			playSound("Correct.wav");
+			TriviaMaze.playSound("Correct.wav");
 			JOptionPane.showMessageDialog(null, String.format("Correct!\nYou opened the door.\nKeys Remaining: %d", myKeys), "Door Trivia", 1);
-			playSound("Door.wav");
+			TriviaMaze.playSound("Door.wav");
 			myCorrect = true;
 		} else {
 			sound.stop();
-			playSound("Incorrect.wav");
+			TriviaMaze.playSound("Incorrect.wav");
 			JOptionPane.showMessageDialog(null, String.format("Incorrect!\nYou lost a key.\nKeys Remaining: %d", --myKeys), "Door Trivia", 0);
 		}
+	}
+	
+	/**
+     * Getter for myKeys.
+     * @return Retrieves the player's updated keys.
+     */
+	public int getKeys() {
+		return myKeys;
+	}
+	
+	/**
+     * Getter for myCorrect.
+     * @return Retrieves if the user answered correctly or not.
+     */
+	public boolean getResult() {
+		return myCorrect;
 	}
 }

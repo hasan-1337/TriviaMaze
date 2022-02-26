@@ -30,17 +30,11 @@ import javax.swing.JPanel;
 */
 public class TriviaMaze {
 	
-	// Database's connection URL.
-	private static final String DATABASE = "jdbc:sqlite:/C:\\sqlite\\saves.db";
-	
 	// The main frame for the GUI.
 	protected static JFrame myFrame;
 	
 	// The main menu music.
 	protected static Clip myMusic;
-	
-	// The player's doors.
-	protected int myDoors;
 	
     /**
      * Main method.
@@ -48,12 +42,13 @@ public class TriviaMaze {
      */
 	public static void main(final String[] theArgs) {
 		
-		createDatabase();
+		final TriviaMaze start = new TriviaMaze();
+		start.createDatabase();
 		
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-            	createGUI();
+            	start.createGUI();
             }
         });
 	}
@@ -61,7 +56,11 @@ public class TriviaMaze {
     /**
      * Create the main frame for GUI.
      */	
-	protected static void createGUI() {
+	protected void createGUI() {
+		
+		if (myFrame != null) {
+			myFrame.dispose();
+		}
 		
 		myFrame = new JFrame("Trivia Maze");
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,6 +102,7 @@ public class TriviaMaze {
 	    				if (input != null) {
 	    					if (insert(input, "Easy")) {
 	    						playSound("Select.wav");
+	    						myFrame.dispose();
 	    						new NewGame(input);
 	    						break;
 	    					} else {
@@ -120,6 +120,7 @@ public class TriviaMaze {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
 				playSound("Select.wav");
+				myFrame.dispose();
 				new LoadGame();
 			}
 		});
@@ -155,9 +156,17 @@ public class TriviaMaze {
 	/**
      * Launches the game.
      * @param theSave The save file name.
+     * @param theDifficulty The game's difficulty setting.
      * @param theKeys The player's keys.
+     * @param theDoors The doors that were opened.
+     * @param theSteps The steps the player took.
+     * @param theMap The maze map.
      */
-	protected void launchGame(final String theSave, final int theKeys) {
+	protected void launchGame(final String theSave, final String theDifficulty, final int theKeys, final int theDoors, final int theSteps, final String theMap) {
+		
+		if (myFrame != null) {
+			myFrame.dispose();
+		}
 		
     	final JFrame loading = new JFrame("Trivia Maze");
     	loading.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -171,20 +180,29 @@ public class TriviaMaze {
 		timer.schedule(new TimerTask() {
 			  @Override
 			  public void run() {
-				  myMusic.stop();
-				  myMusic = playSound("Maze.wav");
-				  myMusic.loop(Clip.LOOP_CONTINUOUSLY);
-				  loading.dispose();
-				  
-				  final JPanel game = new Maze(theSave, theKeys);
-				  myFrame = new JFrame("Trivia Maze");
-				  myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				  myFrame.setSize(800, 600);
-				  myFrame.setLocationRelativeTo(null);
-				  myFrame.setResizable(false);
-				  myFrame.setUndecorated(true);
-				  myFrame.add(game);
-				  myFrame.setVisible(true);
+					if (myMusic != null) {
+						myMusic.stop();
+					}
+					myMusic = playSound("Maze.wav");
+					myMusic.loop(Clip.LOOP_CONTINUOUSLY);
+					loading.dispose();
+					
+					JPanel game;
+					
+					if (theMap.length() == 0) {
+						game = new Maze(theSave, theKeys);
+					} else {
+						game = new Maze(theSave, theDifficulty, theKeys, theDoors, theSteps, theMap);
+					}
+					
+					myFrame = new JFrame("Trivia Maze");
+					myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					myFrame.setSize(800, 600);
+					myFrame.setLocationRelativeTo(null);
+					myFrame.setResizable(false);
+					myFrame.setUndecorated(true);
+					myFrame.add(game);
+					myFrame.setVisible(true);
 			  }
 		}, 3500);
 	}
@@ -194,7 +212,7 @@ public class TriviaMaze {
      * @param theSoundFile The sound file's name.
      * @return Clip Retrieves the object of the sound that is playing.
      */
-    protected static Clip playSound(final String theSoundFile) {
+	protected static Clip playSound(final String theSoundFile) {
     	
 		try {
 			final AudioInputStream audioIn = AudioSystem.getAudioInputStream(new File("sounds/" + theSoundFile).toURI().toURL());
@@ -207,22 +225,6 @@ public class TriviaMaze {
             e.printStackTrace();
         }
 		return null;
-    }
-	
-    /**
-     * Connect to the database and retrieve the connection object.
-     * @return Connection The database connection object.
-     */
-    protected Connection connect() {
-    	
-        Connection connection = null;
-        
-        try {
-        	connection = DriverManager.getConnection(DATABASE);
-        } catch (final SQLException e) {
-        	e.printStackTrace();
-        }
-        return connection;
     }
     
     /**
@@ -237,7 +239,7 @@ public class TriviaMaze {
         try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement(); final ResultSet rs = stmt.executeQuery(theQuery)) {
         	try {
     			while (rs.next()) {
-    				final String data = String.format("%s | %s", rs.getString("name"), rs.getString("difficulty"));
+    				final String data = String.format("%s|%s|%d|%d|%d|%s", rs.getString("name"), rs.getString("difficulty"), rs.getInt("keys"), rs.getInt("doors"), rs.getInt("steps"), rs.getString("map"));
     				list.put(rs.getInt("id"), data);
     			}
     		} catch (final SQLException e) {
@@ -254,11 +256,11 @@ public class TriviaMaze {
      * @param theName The name of the save to insert.
      * @param theDifficulty The difficulty of the game.
      */
-    protected static boolean insert(final String theName, final String theDifficulty) {
+    protected boolean insert(final String theName, final String theDifficulty) {
     	
-    	final String sql = "INSERT INTO saves(name, difficulty) VALUES(?, ?)";
+    	final String sql = "INSERT INTO saves(name, difficulty, doors, steps, keys, map) VALUES(?, ?, 0, 0, 0, '')";
     	
-        try (final Connection conn = DriverManager.getConnection(DATABASE); final PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (final Connection conn = this.connect(); final PreparedStatement pstmt = conn.prepareStatement(sql)) {
         	pstmt.setString(1, theName);
         	pstmt.setString(2, theDifficulty);
             pstmt.executeUpdate();
@@ -274,16 +276,20 @@ public class TriviaMaze {
      * @param theDifficulty The game's difficulty to update.
      * @param theKey The player's keys.
      * @param theDoor How many doors
+     * @param theSteps How many steps did the user take.
+     * @param theMap The map of the maze.
      */
-    protected void update(final String theName, final String theDifficulty, final int theKey, final int theDoor) {
+    protected void update(final String theName, final String theDifficulty, final int theKey, final int theDoor, final int theSteps, final String theMap) {
     	
-        final String sql = "UPDATE saves SET difficulty = ?, keys = ?, doors = ? WHERE name = ?";
-
+        final String sql = "UPDATE saves SET difficulty = ?, keys = ?, doors = ?, steps = ?, map = ? WHERE name = ?";
+        
         try (final Connection conn = this.connect(); final PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, theDifficulty);
             pstmt.setInt(2, theKey);
             pstmt.setInt(3, theDoor);
-            pstmt.setString(4, theName);
+            pstmt.setInt(4, theSteps);
+            pstmt.setString(5, theMap);
+            pstmt.setString(6, theName);
             pstmt.executeUpdate();
         } catch (final SQLException e) {
         	e.printStackTrace();
@@ -306,19 +312,35 @@ public class TriviaMaze {
         }
     }
     
+    /**
+     * Connect to the database and retrieve the connection object.
+     * @return Connection The database connection object.
+     */
+    private Connection connect() {
+    	
+        try {
+        	return DriverManager.getConnection("jdbc:sqlite:saves.db");
+        } catch (final SQLException e) {
+        	e.printStackTrace();
+        	return null;
+        }
+    }
+    
 	/**
      * Create the database table if it doesn't exist.
      */
-    private static void createDatabase() {
+    private void createDatabase() {
 
     	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
 				 + "id INTEGER PRIMARY KEY ASC,\n"
-				 + "name text NOT NULL UNIQUE, \n"
-				 + "keys INTEGER, \n"
-				 + "doors INTEGER, \n"
-				 + "difficulty text NOT NULL);";
+				 + "name VARCHAR(32) NOT NULL UNIQUE, \n"
+				 + "difficulty VARCHAR(7) NOT NULL, \n"
+				 + "doors INT NOT NULL, \n"
+				 + "steps INT NOT NULL, \n"
+				 + "keys INT NOT NULL, \n"
+				 + "map VARCHAR(90000));";
     	
-        try (final Connection conn = DriverManager.getConnection(DATABASE); final Statement stmt = conn.createStatement()) {
+        try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement()) {
         	stmt.execute(sql);
         } catch (final SQLException e) {
         	e.printStackTrace();

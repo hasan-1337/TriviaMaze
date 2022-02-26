@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,6 +15,30 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class Maze extends JPanel {
+	
+	// Hard difficulty.
+	private final int HARD = 1;
+	
+	// Medium difficulty.
+	private final int MEDIUM = 2;
+	
+	// Easy difficulty.
+	private final int EASY = 3;
+	
+	// Maze wall.
+	private final int WALL = 1;
+	
+	// Maze area that has been visited.
+	private final int VISITED = 2;
+	
+	// Maze's door.
+	private final int DOOR = 3;
+	
+	// The player in the maze.
+	private final int PLAYER = 4;
+	
+	// Maze's end point.
+	private final int END = 9;
 	
 	// Serial Version.
 	private static final long serialVersionUID = -8859286187722619956L;
@@ -51,6 +76,49 @@ public class Maze extends JPanel {
 	// The side menu panel.
 	private JPanel myPanel;
 	
+	// The save name.
+	private String mySave;
+	
+	// The difficulty.
+	private String myDifficulty;
+	
+    /**
+     * Loads in the old maze.
+     * @param theSave The name of the save.
+     * @param theDifficulty The game's difficulty setting.
+     * @param theKey The player's keys.
+     * @param theDoor How many doors
+     * @param theSteps How many steps did the user take.
+     * @param theMap The map of the maze.
+     */
+	public Maze(final String theSave, final String theDifficulty, final int theKey, final int theDoor, final int theSteps, final String theMap) {
+		
+		this.setBounds(0, 0, 800, 600);
+		this.setFocusable(true);
+		this.requestFocus();
+		
+		myDoors = theDoor;
+		mySave = theSave;
+		mySteps = theSteps;
+		myKeys = theKey;
+		myMazeSize = 18;
+		myPause = false;
+		myDifficulty = theDifficulty;
+		String s = theMap;
+    	s = s.replace(",", "");
+        
+        final String s1[] = s.split("]");
+        myMaze = new int[s1.length][s1[0].length()];
+        
+        for (int i = 0; i < s1.length; i++) {
+            final String s2 = s1[i];
+            
+            for (int j = 0; j < s2.length(); j++) {
+            	myMaze[i][j] = Character.getNumericValue(s2.charAt(j));
+            }
+        }
+	}
+	
 	/**
      * Generates the maze.
      * @param theSave The save file name.
@@ -65,9 +133,10 @@ public class Maze extends JPanel {
 		myKeys = theKeys;
 		myDoors = 0;
 		mySteps = 0;
+		mySave = theSave;
 
 		switch (myKeys) {
-			case 1: { // Hard
+			case HARD: { 
 				final int[][] maze = {
 				    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 		            {1,4,3,0,0,0,1,0,3,0,0,3,0,0,1,0,0,1,0,3,1,0,0,0,1,1,0,1},
@@ -97,11 +166,12 @@ public class Maze extends JPanel {
 		            {1,0,0,0,0,3,1,0,3,0,0,0,1,3,1,0,0,1,0,3,0,3,0,0,1,1,9,1},
 		            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 				};
+				myDifficulty = "Hard";
 				myMazeSize = 18;
 				myMaze = maze;
 				break;
 			}
-			case 2: { // Medium
+			case MEDIUM: { 
 				final int[][] maze = {
 					    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 			            {1,4,3,0,0,0,1,0,3,0,0,3,0,0,1,0,0,3,0,3,1,0,0,0,1},
@@ -125,11 +195,12 @@ public class Maze extends JPanel {
 			            {1,0,0,0,0,3,1,0,3,0,0,0,1,3,1,0,0,1,0,0,0,1,1,9,1},
 			            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 					};
+				myDifficulty = "Medium";
 				myMazeSize = 21;
 				myMaze = maze;
 				break;
 			}
-			case 3: { // Easy
+			case EASY: { 
 				final int[][] maze = {
 			    	    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 			            {1,4,3,0,0,0,1,0,3,0,0,3,0,0,1,0,0,3,0,3,1,0,1},
@@ -147,6 +218,7 @@ public class Maze extends JPanel {
 			            {1,0,0,3,1,0,3,0,0,0,1,0,1,0,0,1,0,0,0,1,1,9,1},
 			            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 					};
+				myDifficulty = "Easy";
 				myMazeSize = 22;
 				myMaze = maze;
 				break;
@@ -167,50 +239,50 @@ public class Maze extends JPanel {
 
 		switch (theEvent.getKeyCode()) {
 			case KeyEvent.VK_UP, KeyEvent.VK_W: {
-				if (myMaze[myX - 1][myY] != 1) {
+				if (myMaze[myX - 1][myY] != WALL) {
 					if (!move(myMaze[myX - 1][myY])) {
 						return;
-					} else if (myMaze[myX - 1][myY] != 2) {
+					} else if (myMaze[myX - 1][myY] != VISITED) {
 						mySteps++;
 					}
-					myMaze[myX][myY] = 2;
-					myMaze[myX - 1][myY] = 4;
+					myMaze[myX][myY] = VISITED;
+					myMaze[myX - 1][myY] = PLAYER;
 				}
 				break;
 			}
 			case KeyEvent.VK_DOWN, KeyEvent.VK_S: {
-				if (myMaze[myX + 1][myY] != 1) {
+				if (myMaze[myX + 1][myY] != WALL) {
 					if (!move(myMaze[myX + 1][myY])) {
 						return;
-					} else if (myMaze[myX + 1][myY] != 2) {
+					} else if (myMaze[myX + 1][myY] != VISITED) {
 						mySteps++;
 					}
-					myMaze[myX][myY] = 2;
-					myMaze[myX + 1][myY] = 4;
+					myMaze[myX][myY] = VISITED;
+					myMaze[myX + 1][myY] = PLAYER;
 				}
 				break;
 			}
 			case KeyEvent.VK_LEFT, KeyEvent.VK_A: {
-				if (myMaze[myX][myY - 1] != 1) {
+				if (myMaze[myX][myY - 1] != WALL) {
 					if (!move(myMaze[myX][myY - 1])) {
 						return;
-					} else if (myMaze[myX][myY - 1] != 2) {
+					} else if (myMaze[myX][myY - 1] != VISITED) {
 						mySteps++;
 					}
-					myMaze[myX][myY] = 2;
-					myMaze[myX][myY - 1] = 4;
+					myMaze[myX][myY] = VISITED;
+					myMaze[myX][myY - 1] = PLAYER;
 				}
 				break;
 			}
 			case KeyEvent.VK_RIGHT, KeyEvent.VK_D: {
-				if (myMaze[myX][myY + 1] != 1) {
+				if (myMaze[myX][myY + 1] != WALL) {
 					if (!move(myMaze[myX][myY + 1])) {
 						return;
-					} else if (myMaze[myX][myY + 1] != 2) {
+					} else if (myMaze[myX][myY + 1] != VISITED) {
 						mySteps++;
 					}
-					myMaze[myX][myY] = 2;
-					myMaze[myX][myY + 1] = 4;
+					myMaze[myX][myY] = VISITED;
+					myMaze[myX][myY + 1] = PLAYER;
 				}
 				break;
 			}
@@ -225,21 +297,20 @@ public class Maze extends JPanel {
      */
 	private boolean move(final int thePath) {
 		
-		if (thePath == 9) { // Reached the end.
+		if (thePath == END) { // Reached the end.
 			TriviaMaze.myMusic.stop();
 			TriviaMaze.playSound("Win.wav");
 			JOptionPane.showMessageDialog(null, "WINNER WINNER CHICKEN DINNER!", "You Won", 1);
 			myPause = true;
-			TriviaMaze.myFrame.dispose();
-			TriviaMaze.createGUI(); // Restart
+			new TriviaMaze().createGUI(); // Restart
 			return false;
 		}
-		else if (thePath == 3) { // At a door.
+		else if (thePath == DOOR) { // At a door.
 			final Room door = new Room(myKeys);
-			myKeys = door.myKeys;
+			myKeys = door.getKeys();
 			
-			if (door.myDoorOption) {
-				if (!door.myResult) {
+			if (door.getDoorOption()) {
+				if (!door.getResult()) {
 					attachments();
 					repaint();
 					
@@ -247,8 +318,7 @@ public class Maze extends JPanel {
 						myPause = true;
 						TriviaMaze.playSound("Lose.wav");
 						JOptionPane.showMessageDialog(null, "GAME OVER\nYou're out of keys.", "Game Over", 0);
-						TriviaMaze.myFrame.dispose();
-						TriviaMaze.createGUI(); // Restart
+						new TriviaMaze().createGUI(); // Restart
 					} else {
 						TriviaMaze.playSound("Locked.wav");
 					}
@@ -256,6 +326,10 @@ public class Maze extends JPanel {
 				} else {
 					myDoors++;
 				}
+				
+	        	String map = Arrays.deepToString(myMaze);
+	        	map = map.substring(2, map.length() - 2).replace(" ", "").replace("[", "");
+	        	new TriviaMaze().update(mySave, myDifficulty, myKeys, myDoors, mySteps, map);
 			} else {
 				return false;
 			}
@@ -360,8 +434,13 @@ public class Maze extends JPanel {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
 		        if (JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?\nYour progress is saved.", "Exit Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-					TriviaMaze.myFrame.dispose();
-					TriviaMaze.createGUI(); // Back to main menu.
+		        	final TriviaMaze maze = new TriviaMaze();
+		        	
+		        	String map = Arrays.deepToString(myMaze);
+		        	map = map.substring(2, map.length() - 2).replace(" ", "").replace("[", "");
+		        	
+		        	maze.update(mySave, myDifficulty, myKeys, myDoors, mySteps, map);
+		        	maze.createGUI(); // Back to main menu.
 		        } else {
 		        	repaint();
 		        }
@@ -392,7 +471,7 @@ public class Maze extends JPanel {
 			 final int[] location = theMaze[row];
 			 
 			 for (int column = 0; column < location.length; column++) {
-				 if (location[column] == 4) {
+				 if (location[column] == PLAYER) {
 					 return new Point(row, column);
 				 }
 			 }
