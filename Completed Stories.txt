@@ -11,3 +11,7 @@ _ added a counter for keys.
 _ adder a counter for steps.
 _ added a time limit for answering questions.
 _ added visuals and JLables into the game.
+_ added a save option that saves all the questions into a database file.
+_ added an extra feature which allow players to pick up keys around the map.
+_ added more questions.
+
