@@ -25,3 +25,9 @@ _ As a developer, we added music for th homescreen and during the game.
 _ As a developer, we added features to the side of the JFrame that indicates the number of doors, keys, and steps.
 _ As a developer, we added different maps for each level of the game.
 _ As a developer, we added a timer of 10 seconds for the user to answer the question (otherwise it will automatically consider it wrong).
+
+
+User stories for the 4th iteration.
+_ As a developer, we added extra features to the game such as randomly inserting keys around the maps.
+_ As a developer, we added an option that saves all questions in a file stored in a database.
+_ As a developer, we added different types of question (short answer) other than the mathmatical questions.
