@@ -1,3 +1,7 @@
+/*
+ * This file is used for testing the Question_Answer class for the Trivia Maze Game.
+ */
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -12,7 +16,7 @@ public class Question_AnswerTest {
      * This function with @Before annotation is called before every test case is executed.
      */
     @Before
-    public void setUp() {
+    void setUp() {
     	
     	myTest = new Question_Answer(0);
     }
@@ -21,7 +25,7 @@ public class Question_AnswerTest {
      * Testing Question_Answer constructor.
      */
     @Test
-    public void testQuestion_Answer() {  
+    void testQuestion_Answer() {  
     	
     	assertNotNull("The object is null.", myTest);
     }  

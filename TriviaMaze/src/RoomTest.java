@@ -1,3 +1,7 @@
+/*
+ * This file is used for testing the Room class for the Trivia Maze Game.
+ */
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -12,7 +16,7 @@ public class RoomTest {
      * This function with @Before annotation is called before every test case is executed.
      */
     @Before
-    public void setUp() {
+    void setUp() {
     	
     	myTest = new Room(0);
     }
@@ -21,7 +25,7 @@ public class RoomTest {
      * Testing Room constructor.
      */
     @Test 
-    public void testRoom() {  
+    void testRoom() {  
     	
     	assertNotNull("The object is null.", myTest);
     }  
