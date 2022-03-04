@@ -331,7 +331,7 @@ public class TriviaMaze {
      */
     private void createDatabase() {
 
-    	final String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
+    	String sql = "CREATE TABLE IF NOT EXISTS saves (\n"
 				 + "id INTEGER PRIMARY KEY ASC,\n"
 				 + "name VARCHAR(32) NOT NULL UNIQUE, \n"
 				 + "difficulty VARCHAR(7) NOT NULL, \n"
@@ -340,6 +340,17 @@ public class TriviaMaze {
 				 + "keys INT NOT NULL, \n"
 				 + "map VARCHAR(90000));";
     	
+        try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement()) {
+        	stmt.execute(sql);
+        } catch (final SQLException e) {
+        	e.printStackTrace();
+        }
+        
+        sql = "CREATE TABLE IF NOT EXISTS qna (\n"
+				 + "id INTEGER PRIMARY KEY ASC,\n"
+				 + "question VARCHAR(1000) NOT NULL, \n"
+				 + "answer VARCHAR(100) NOT NULL);";
+        
         try (final Connection conn = this.connect(); final Statement stmt = conn.createStatement()) {
         	stmt.execute(sql);
         } catch (final SQLException e) {
