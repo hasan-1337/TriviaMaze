@@ -16,6 +16,9 @@ import javax.swing.JTextArea;
 
 public class Maze extends JPanel {
 	
+	// Serial Version.
+	private static final long serialVersionUID = -8859286187722619956L;
+	
 	// Hard difficulty.
 	private final int HARD = 1;
 	
@@ -40,20 +43,11 @@ public class Maze extends JPanel {
 	// Maze's end point.
 	private final int END = 9;
 	
-	// Serial Version.
-	private static final long serialVersionUID = -8859286187722619956L;
+	// The maze map to play on.
+	private int[][] myMaze;
 	
 	// Size of the maze.
 	private int myMazeSize;
-	
-	// The maze map to play on.
-	// 0 = not-visited
-	// 1 = wall
-	// 2 = visited
-	// 3 = door
-	// 4 = player
-	// 9 = goal
-	private int[][] myMaze;
 	
 	// The player's X coordinate. 
 	private int myX;
@@ -73,14 +67,14 @@ public class Maze extends JPanel {
 	// Pause the player's movement.
 	private boolean myPause;
 	
-	// The side menu panel.
-	private JPanel myPanel;
-	
 	// The save name.
 	private String mySave;
 	
 	// The difficulty.
 	private String myDifficulty;
+	
+	// The side menu panel.
+	private JPanel myPanel;
 	
     /**
      * Loads in the old maze.
@@ -101,7 +95,15 @@ public class Maze extends JPanel {
 		mySave = theSave;
 		mySteps = theSteps;
 		myKeys = theKey;
-		myMazeSize = 18;
+		
+		if (theDifficulty.equals("Easy")) {
+			myMazeSize = 21;
+		} else if (theDifficulty.equals("Medium")) {
+			myMazeSize = 22;
+		} else {
+			myMazeSize = 18;
+		}
+		
 		myPause = false;
 		myDifficulty = theDifficulty;
 		String s = theMap;

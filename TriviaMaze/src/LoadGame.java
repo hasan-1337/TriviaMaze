@@ -98,7 +98,7 @@ public class LoadGame extends TriviaMaze {
      * Loads the save.
      * @param theData The information that holds all the save information.
      */
-	public void load(final String theData) {
+	private void load(final String theData) {
 		
 		final String[] info = theData.split("\\|");
 		
