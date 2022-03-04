@@ -1,3 +1,7 @@
+/*
+ * This file is used for testing the Maze class for the Trivia Maze Game.
+ */
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -15,7 +19,7 @@ public class MazeTest {
      * This function with @Before annotation is called before every test case is executed.
      */
     @Before
-    public void setUp() {
+    void setUp() {
     	
     	myTest = new Maze(null, 0);
     	myTest2 = new Maze(null, null, 0, 0, 0, null);
@@ -25,7 +29,7 @@ public class MazeTest {
      * Testing Maze constructor.
      */
     @Test
-    public void testMaze() {  
+    void testMaze() {  
     	
     	assertNotNull("The object is null.", myTest);
     }  
@@ -34,7 +38,7 @@ public class MazeTest {
      * Testing second Maze constructor.
      */
     @Test
-    public void testMaze2() {  
+    void testMaze2() {  
     	
     	assertNotNull("The object is null.", myTest2);
     }  
