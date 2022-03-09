@@ -14,4 +14,6 @@ _ added visuals and JLables into the game.
 _ added a save option that saves all the questions into a database file.
 _ added an extra feature which allow players to pick up keys around the map.
 _ added more questions.
-
+_ connected the database to the game which automatically saves all the questions that were asked to the player.
+_ added test cases.
+_ added other extra credit features (game character, keys, and audio).
